@@ -841,7 +841,7 @@ export default function ContractorForm({
                                   <AiOutlineLoading3Quarters className="text-5xl animate-spin text-primary" />
                                 </div>
                               ) : (
-                                <div className="flex items-center gap-2  justify center md:gap-4">
+                                <div className="flex items-center gap-2 justify center md:gap-4">
                                   <ImageDownIcon color="gray" />{" "}
                                   <p className="text-[12px] md:text-sm text-gray-600">
                                     Click to upload image
@@ -1078,16 +1078,16 @@ export default function ContractorForm({
                   <h2 className="mb-4 text-2xl font-bold">
                     Personnel Protective Equipment
                   </h2>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     {ppeItems.map((item, idx) => (
                       <div
                         key={idx}
-                        className="p-2 border shadow-sm rounded-xl"
+                        className="flex flex-col justify-between p-4 border shadow-sm rounded-xl"
                       >
-                        <div className="mb-2 text-sm font-semibold text-center">
+                        <div className="text-sm font-semibold text-center break-words whitespace-normal">
                           {item}
                         </div>
-                        <div className="flex justify-center gap-4">
+                        <div className="flex flex-wrap justify-center gap-4 pt-3 mt-auto">
                           {["Y", "N"].map((opt) => (
                             <label
                               key={opt}
