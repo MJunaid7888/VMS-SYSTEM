@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/lib/AuthContext';
-import { visitorAPI, employeeAPI, Visitor, Employee } from '@/lib/api';
-import VisitorBadge from '@/components/VisitorBadge';
-import AppBar from '@/components/AppBar';
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/lib/AuthContext";
+import { visitorAPI, employeeAPI, Visitor, Employee } from "@/lib/api";
+import VisitorBadge from "@/components/VisitorBadge";
+import AppBar from "@/components/AppBar";
 import {
   ArrowLeft,
   AlertCircle,
@@ -14,15 +14,15 @@ import {
   LogOut,
   RefreshCw,
   Printer,
-  Share
-} from 'lucide-react';
+  Share,
+} from "lucide-react";
 
 export default function VisitorBadgePage() {
   const [visitor, setVisitor] = useState<Visitor | null>(null);
   const [host, setHost] = useState<Employee | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [checkingOut, setCheckingOut] = useState(false);
 
   const { id } = useParams();
@@ -35,44 +35,57 @@ export default function VisitorBadgePage() {
 
       try {
         setIsLoading(true);
-        setError('');
+        setError("");
 
         // Check if token is available
         if (!token) {
-          console.warn('No authentication token available, attempting to fetch visitor without authentication');
+          console.warn(
+            "No authentication token available, attempting to fetch visitor without authentication"
+          );
         }
 
         const visitorId = Array.isArray(id) ? id[0] : id;
 
         try {
           // Try to fetch visitor data
-          const visitorData = await visitorAPI.getVisitor(visitorId, token || '');
+          const visitorData = await visitorAPI.getVisitor(
+            visitorId,
+            token || ""
+          );
           setVisitor(visitorData);
 
           // Fetch host information if available
           if (visitorData.hostEmployee) {
             try {
-              const hostData = await employeeAPI.getEmployee(visitorData.hostEmployee, token || '');
+              const hostData = await employeeAPI.getEmployee(
+                visitorData.hostEmployee,
+                token || ""
+              );
               setHost(hostData);
             } catch (hostErr) {
-              console.error('Error fetching host:', hostErr);
+              console.error("Error fetching host:", hostErr);
               // Don't set an error, just continue without host info
             }
           }
         } catch (visitorErr) {
-          console.error('Error fetching visitor:', visitorErr);
+          console.error("Error fetching visitor:", visitorErr);
 
           // If the error is due to authentication, show error message
-          if (visitorErr instanceof Error && visitorErr.message.includes('authentication')) {
-            console.warn('Authentication error accessing visitor badge');
-            setError('Authentication required to view visitor badge');
+          if (
+            visitorErr instanceof Error &&
+            visitorErr.message.includes("authentication")
+          ) {
+            console.warn("Authentication error accessing visitor badge");
+            setError("Authentication required to view visitor badge");
           } else {
-            setError('Failed to load visitor information');
+            setError("Failed to load visitor information");
           }
         }
       } catch (err) {
-        console.error('Unexpected error:', err);
-        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+        console.error("Unexpected error:", err);
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
       } finally {
         setIsLoading(false);
       }
@@ -86,23 +99,28 @@ export default function VisitorBadgePage() {
 
     try {
       setCheckingOut(true);
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
 
       const visitorId = Array.isArray(id) ? id[0] : id;
-      await visitorAPI.checkOutVisitor(visitorId, token || '');
+      await visitorAPI.checkOutVisitor(visitorId, token || "");
 
-      setSuccess('You have been checked out successfully. Thank you for your visit!');
+      setSuccess(
+        "You have been checked out successfully. Thank you for your visit!"
+      );
 
       // Update visitor status locally
-      setVisitor(prev => prev ? {
-        ...prev,
-        status: 'checked-out',
-        checkOutTime: new Date().toISOString()
-      } : null);
-
+      setVisitor((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: "checked-out",
+              checkOutTime: new Date().toISOString(),
+            }
+          : null
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to check out');
+      setError(err instanceof Error ? err.message : "Failed to check out");
     } finally {
       setCheckingOut(false);
     }
@@ -113,18 +131,21 @@ export default function VisitorBadgePage() {
   };
 
   const handleShare = async () => {
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+    if (
+      typeof navigator !== "undefined" &&
+      typeof navigator.share === "function"
+    ) {
       try {
         await navigator.share({
-          title: 'Visitor Badge',
+          title: "Visitor Badge",
           text: `Visitor Badge for ${visitor?.firstName} ${visitor?.lastName}`,
-          url: window.location.href
+          url: window.location.href,
         });
       } catch (error) {
-        console.error('Error sharing:', error);
+        console.error("Error sharing:", error);
       }
     } else {
-      alert('Web Share API not supported in your browser');
+      alert("Web Share API not supported in your browser");
     }
   };
 
@@ -132,34 +153,36 @@ export default function VisitorBadgePage() {
     <div className="min-h-screen bg-gray-50">
       <AppBar />
 
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+      <div className="max-w-4xl px-3 py-4 mx-auto sm:px-4 md:px-6 lg:px-8 sm:py-6 md:py-8">
         <div className="mb-4 sm:mb-6">
           <Link
             href="/"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm sm:text-base"
+            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 sm:text-base"
           >
             <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
             Back to Home
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden">
+        <div className="overflow-hidden bg-white rounded-lg shadow-md sm:rounded-xl">
           <div className="p-4 sm:p-6">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Visitor Badge</h1>
+            <h1 className="mb-3 text-xl font-bold text-gray-900 sm:text-2xl sm:mb-4">
+              Visitor Badge
+            </h1>
 
             {isLoading ? (
-              <div className="flex justify-center items-center py-8 sm:py-12">
-                <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="flex items-center justify-center py-8 sm:py-12">
+                <div className="w-10 h-10 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin sm:h-12 sm:w-12"></div>
               </div>
             ) : error ? (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 sm:px-6 py-3 sm:py-4 rounded-lg mb-4 sm:mb-6 flex items-start">
+              <div className="flex items-start px-4 py-3 mb-4 text-red-700 border border-red-200 rounded-lg bg-red-50 sm:px-6 sm:py-4 sm:mb-6">
                 <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium mb-1 text-sm sm:text-base">Error</p>
+                  <p className="mb-1 text-sm font-medium sm:text-base">Error</p>
                   <p className="text-xs sm:text-sm">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="mt-2 sm:mt-3 text-xs sm:text-sm text-red-600 hover:text-red-800 flex items-center"
+                    className="flex items-center mt-2 text-xs text-red-600 sm:mt-3 sm:text-sm hover:text-red-800"
                   >
                     <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
                     Try Again
@@ -167,10 +190,12 @@ export default function VisitorBadgePage() {
                 </div>
               </div>
             ) : success ? (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 sm:px-6 py-3 sm:py-4 rounded-lg mb-4 sm:mb-6 flex items-start">
+              <div className="flex items-start px-4 py-3 mb-4 text-green-700 border border-green-200 rounded-lg bg-green-50 sm:px-6 sm:py-4 sm:mb-6">
                 <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium mb-1 text-sm sm:text-base">Success</p>
+                  <p className="mb-1 text-sm font-medium sm:text-base">
+                    Success
+                  </p>
                   <p className="text-xs sm:text-sm">{success}</p>
                   <div className="mt-3 sm:mt-4">
                     <Link
@@ -185,13 +210,10 @@ export default function VisitorBadgePage() {
             ) : visitor ? (
               <div>
                 <div className="mb-4 sm:mb-6">
-                  <VisitorBadge
-                    visitor={visitor}
-                    hostName={host?.name}
-                  />
+                  <VisitorBadge visitor={visitor} hostName={host?.name} />
                 </div>
 
-                <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-6 sm:mt-8 print:hidden">
+                <div className="flex flex-wrap justify-center gap-2 mt-6 sm:gap-3 sm:mt-8 print:hidden">
                   <button
                     onClick={handlePrint}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center shadow-sm"
@@ -200,17 +222,18 @@ export default function VisitorBadgePage() {
                     Print Badge
                   </button>
 
-                  {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
-                    <button
-                      onClick={handleShare}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center shadow-sm"
-                    >
-                      <Share className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                      Share Badge
-                    </button>
-                  )}
+                  {typeof navigator !== "undefined" &&
+                    typeof navigator.share === "function" && (
+                      <button
+                        onClick={handleShare}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center shadow-sm"
+                      >
+                        <Share className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                        Share Badge
+                      </button>
+                    )}
 
-                  {visitor.status === 'checked-in' && (
+                  {visitor.status === "checked-in" && (
                     <button
                       onClick={handleCheckOut}
                       disabled={checkingOut}
@@ -232,8 +255,10 @@ export default function VisitorBadgePage() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8 sm:py-12">
-                <p className="text-gray-500 text-sm sm:text-base">No visitor information found</p>
+              <div className="py-8 text-center sm:py-12">
+                <p className="text-sm text-gray-500 sm:text-base">
+                  No visitor information found
+                </p>
               </div>
             )}
           </div>

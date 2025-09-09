@@ -256,11 +256,11 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl transform transition-all">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-blue-900 flex items-center">
-            <Camera className="h-5 w-5 mr-2 text-blue-700" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-md p-6 transition-all transform bg-white shadow-2xl rounded-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="flex items-center text-xl font-bold text-blue-900">
+            <Camera className="w-5 h-5 mr-2 text-blue-700" />
             Scan QR Code
           </h2>
           <button
@@ -268,21 +268,21 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
             className="text-gray-500 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
             aria-label="Close"
           >
-            <X className="h-5 w-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-start animate-fadeIn">
+          <div className="flex items-start px-4 py-3 mb-4 text-red-700 border-l-4 border-red-500 rounded-lg bg-red-50 animate-fadeIn">
             <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium">Error</p>
               <p className="text-sm">{error}</p>
               <button
                 onClick={startScanner}
-                className="mt-2 text-sm text-red-600 hover:text-red-800 flex items-center"
+                className="flex items-center mt-2 text-sm text-red-600 hover:text-red-800"
               >
-                <Camera className="h-4 w-4 mr-1" />
+                <Camera className="w-4 h-4 mr-1" />
                 Try Again
               </button>
             </div>
@@ -290,23 +290,23 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
         )}
 
         {scanResult && (
-          <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg mb-4 animate-fadeIn">
+          <div className="px-4 py-3 mb-4 text-green-700 border-l-4 border-green-500 rounded-lg bg-green-50 animate-fadeIn">
             <p className="font-medium">QR Code Detected!</p>
             <p className="text-sm">
               Processing: {scanResult.substring(0, 30)}
               {scanResult.length > 30 ? "..." : ""}
             </p>
-            <div className="mt-2 flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-700 border-t-transparent mr-2"></div>
+            <div className="flex items-center mt-2">
+              <div className="w-4 h-4 mr-2 border-2 border-green-700 rounded-full animate-spin border-t-transparent"></div>
               <span className="text-xs">Validating...</span>
             </div>
           </div>
         )}
 
-        <div className="relative overflow-hidden rounded-xl shadow-inner">
+        <div className="relative overflow-hidden shadow-inner rounded-xl">
           <video
             ref={videoRef}
-            className="w-full h-72 bg-black rounded-xl object-cover"
+            className="object-cover w-full bg-black h-72 rounded-xl"
             muted
             playsInline
           />
@@ -317,7 +317,7 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
 
           {scanning && !scanResult && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-52 h-52 border-4 border-white/70 rounded-lg relative">
+              <div className="relative border-4 rounded-lg w-52 h-52 border-white/70">
                 {/* Animated scanner line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-500 animate-[scanDown_2s_ease-in-out_infinite]"></div>
 
@@ -327,7 +327,7 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
                 <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-500 rounded-bl-sm"></div>
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-500 rounded-br-sm"></div>
               </div>
-              <div className="absolute bottom-4 left-0 right-0 text-center text-white bg-black/60 backdrop-blur-sm py-2 text-sm font-medium">
+              <div className="absolute left-0 right-0 py-2 text-sm font-medium text-center text-white bottom-4 bg-black/60 backdrop-blur-sm">
                 Position QR code within the frame
               </div>
             </div>
@@ -339,24 +339,24 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
             cameraPermission !== "denied" && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
                 <div className="flex flex-col items-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-3"></div>
-                  <p className="text-white text-sm">Initializing camera...</p>
+                  <div className="w-12 h-12 mb-3 border-4 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
+                  <p className="text-sm text-white">Initializing camera...</p>
                 </div>
               </div>
             )}
 
           {cameraPermission === "denied" && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-              <div className="bg-white p-6 rounded-lg max-w-xs text-center">
-                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
-                <h3 className="text-lg font-bold mb-2">Camera Access Denied</h3>
-                <p className="text-gray-600 mb-4">
+              <div className="max-w-xs p-6 text-center bg-white rounded-lg">
+                <AlertCircle className="w-12 h-12 mx-auto mb-3 text-red-500" />
+                <h3 className="mb-2 text-lg font-bold">Camera Access Denied</h3>
+                <p className="mb-4 text-gray-600">
                   Please allow camera access in your browser settings to scan QR
                   codes.
                 </p>
                 <button
                   onClick={handleManualInput}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg w-full"
+                  className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg"
                 >
                   Enter Code Manually
                 </button>
@@ -365,18 +365,18 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
           )}
         </div>
 
-        <div className="mt-5 text-center text-sm flex flex-col items-center justify-center">
-          <div className="mb-3 bg-blue-50 py-2 px-4 rounded-full inline-flex items-center">
+        <div className="flex flex-col items-center justify-center mt-5 text-sm text-center">
+          <div className="inline-flex items-center px-4 py-2 mb-3 rounded-full bg-blue-50">
             {scanning && !scanResult ? (
               <>
-                <Camera className="h-4 w-4 mr-2 text-blue-600 animate-pulse" />
-                <span className="text-blue-800 font-medium">
+                <Camera className="w-4 h-4 mr-2 text-blue-600 animate-pulse" />
+                <span className="font-medium text-blue-800">
                   Scanning for QR code...
                 </span>
               </>
             ) : scanResult ? (
-              <div className="text-green-700 font-medium animate-pulse flex items-center">
-                <CheckCircle className="h-4 w-4 mr-2" />
+              <div className="flex items-center font-medium text-green-700 animate-pulse">
+                <CheckCircle className="w-4 h-4 mr-2" />
                 Processing QR code...
               </div>
             ) : (
@@ -389,9 +389,9 @@ export default function QRCodeScanner({ token, onClose }: QRCodeScannerProps) {
           {scanning && !scanResult && !processingQR && (
             <button
               onClick={handleManualInput}
-              className="mt-2 text-blue-600 hover:text-blue-800 text-sm flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-full transition-colors"
+              className="flex items-center px-4 py-2 mt-2 text-sm text-blue-600 transition-colors rounded-full hover:text-blue-800 bg-blue-50 hover:bg-blue-100"
             >
-              <Scan className="h-4 w-4 mr-2" />
+              <Scan className="w-4 h-4 mr-2" />
               Enter QR code manually
             </button>
           )}
