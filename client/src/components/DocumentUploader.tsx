@@ -1,20 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { useAuth } from '@/lib/AuthContext';
-import { newVisitorAPI, Doc } from '@/lib/api';
-import { Upload, File, X, AlertCircle, CheckCircle } from 'lucide-react';
-import { convertFileToBase64, uploadBase64File } from '../utils'; // ensure you have this
+import { useState, useRef } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { newVisitorAPI, Doc } from "@/lib/api";
+import { Upload, File, X, AlertCircle, CheckCircle } from "lucide-react";
+import { convertFileToBase64, uploadBase64File } from "../utils"; // ensure you have this
 
 interface DocumentUploaderProps {
   visitorId: string;
   onUploadSuccess?: (document: Doc) => void;
 }
 
-export default function DocumentUploader({ visitorId, onUploadSuccess }: DocumentUploaderProps) {
+export default function DocumentUploader({
+  visitorId,
+  onUploadSuccess,
+}: DocumentUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [documentType, setDocumentType] = useState<'id' | 'nda' | 'training' | 'other'>('id');
-  const [description, setDescription] = useState('');
+  const [documentType, setDocumentType] = useState<
+    "id" | "nda" | "training" | "other"
+  >("id");
+  const [description, setDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -34,18 +39,18 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
     e.preventDefault();
 
     if (!token) {
-      setError('You must be logged in to upload documents');
+      setError("You must be logged in to upload documents");
       return;
     }
 
     if (!file) {
-      setError('Please select a file to upload');
+      setError("Please select a file to upload");
       return;
     }
 
     const fileSizeInMB = file.size / (1024 * 1024);
     if (fileSizeInMB > MAX_FILE_SIZE_MB) {
-      setError('File exceeds the 5MB size limit');
+      setError("File exceeds the 5MB size limit");
       return;
     }
 
@@ -56,9 +61,9 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
     try {
       const base64 = await convertFileToBase64(file);
       const fullBase64 = `data:${file.type};base64,${base64}`;
-      const url = await uploadBase64File(fullBase64, 'raw');
+      const url = await uploadBase64File(fullBase64, "raw");
 
-      if (!url) throw new Error('Cloud upload failed');
+      if (!url) throw new Error("Cloud upload failed");
 
       const uploadedDocument: Doc = {
         name: file.name,
@@ -72,12 +77,14 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
 
       setSuccessMessage(`Document "${file.name}" uploaded successfully`);
       setFile(null);
-      setDescription('');
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setDescription("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       if (onUploadSuccess) onUploadSuccess(uploadedDocument);
     } catch (err) {
-      console.error('Error uploading document:', err);
-      setError(err instanceof Error ? err.message : 'Failed to upload document');
+      console.error("Error uploading document:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to upload document"
+      );
     } finally {
       setIsUploading(false);
     }
@@ -86,16 +93,18 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
   const clearFile = () => {
     setFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload Document</h2>
+    <div className="p-6 bg-white rounded-lg shadow-md">
+      <h2 className="mb-4 text-xl font-semibold text-gray-900">
+        Upload Document
+      </h2>
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-4 flex items-start">
+        <div className="flex items-start p-4 mb-4 text-red-700 border-l-4 border-red-500 rounded bg-red-50">
           <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
           <div>
             <p className="font-medium">Error</p>
@@ -105,7 +114,7 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
       )}
 
       {successMessage && (
-        <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded mb-4 flex items-start">
+        <div className="flex items-start p-4 mb-4 text-green-700 border-l-4 border-green-500 rounded bg-green-50">
           <CheckCircle className="h-5 w-5 mr-2 mt-0.5" />
           <div>
             <p className="font-medium">Success</p>
@@ -116,7 +125,10 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
 
       <form onSubmit={handleUpload} className="space-y-4">
         <div>
-          <label htmlFor="documentType" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="documentType"
+            className="block mb-1 text-sm font-medium text-gray-700"
+          >
             Document Type
           </label>
           <select
@@ -134,7 +146,10 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="description"
+            className="block mb-1 text-sm font-medium text-gray-700"
+          >
             Description
           </label>
           <input
@@ -148,26 +163,31 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
         </div>
 
         <div>
-          <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="file-upload"
+            className="block mb-1 text-sm font-medium text-gray-700"
+          >
             File
           </label>
           {file ? (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-blue-50 border border-blue-200 rounded-md p-3">
+            <div className="flex flex-col justify-between p-3 border border-blue-200 rounded-md sm:flex-row sm:items-center bg-blue-50">
               <div className="flex items-center overflow-hidden">
-                <File className="h-5 w-5 flex-shrink-0 text-blue-500 mr-2" />
-                <span className="text-sm text-gray-900 truncate">{file.name}</span>
+                <File className="flex-shrink-0 w-5 h-5 mr-2 text-blue-500" />
+                <span className="text-sm text-gray-900 truncate">
+                  {file.name}
+                </span>
               </div>
               <button
                 type="button"
                 onClick={clearFile}
-                className="text-gray-500 hover:text-gray-700 mt-2 sm:mt-0 self-end sm:self-auto"
+                className="self-end mt-2 text-gray-500 hover:text-gray-700 sm:mt-0 sm:self-auto"
               >
-               { <X className="h-5 w-5" /> }
+                {<X className="w-5 h-5" />}
               </button>
             </div>
           ) : (
             <div
-              className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
+              className="flex justify-center px-6 pt-5 pb-6 mt-1 border-2 border-gray-300 border-dashed rounded-md"
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
@@ -178,11 +198,11 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
               }}
             >
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex flex-col sm:flex-row items-center text-sm text-gray-600">
+                <Upload className="w-12 h-12 mx-auto text-gray-400" />
+                <div className="flex flex-col items-center text-sm text-gray-600 sm:flex-row">
                   <label
                     htmlFor="file-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500"
+                    className="relative font-medium text-blue-600 bg-white rounded-md cursor-pointer hover:text-blue-500"
                   >
                     <span>Upload a file</span>
                     <input
@@ -197,7 +217,9 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
                   </label>
                   <p className="pl-1 mt-1 sm:mt-0">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">PDF, DOC, DOCX, JPG, PNG up to 5MB</p>
+                <p className="text-xs text-gray-500">
+                  PDF, DOC, DOCX, JPG, PNG up to 5MB
+                </p>
               </div>
             </div>
           )}
@@ -207,16 +229,16 @@ export default function DocumentUploader({ visitorId, onUploadSuccess }: Documen
           <button
             type="submit"
             disabled={isUploading || !file}
-            className="inline-flex items-center px-6 py-3 sm:px-4 sm:py-2 border border-transparent rounded-md shadow-sm text-base sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm sm:px-4 sm:py-2 sm:text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isUploading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                <div className="w-4 h-4 mr-2 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
                 <span>Uploading...</span>
               </>
             ) : (
               <>
-                <Upload className="mr-2 h-4 w-4" />
+                <Upload className="w-4 h-4 mr-2" />
                 <span>Upload Document</span>
               </>
             )}

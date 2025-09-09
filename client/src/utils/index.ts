@@ -11,13 +11,13 @@ export const uploadBase64File = async (
 
   try {
     const formData = new FormData();
-    formData.append('file', base64Data); // Pass full data URL
-    formData.append('upload_preset', 'visitor-management-system');
+    formData.append("file", base64Data); // Pass full data URL
+    formData.append("upload_preset", "visitor-management-system");
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/dizxfdmk5/${type}/upload`,
       {
-        method: 'POST',
+        method: "POST",
         body: formData,
       }
     );
@@ -25,14 +25,14 @@ export const uploadBase64File = async (
     const file: CloudinaryResponse = await res.json();
 
     if (!res.ok) {
-      console.error('Cloudinary response error:', file);
+      console.error("Cloudinary response error:", file);
       return null;
     }
     console.log(file.secure_url);
-    
+
     return file.secure_url;
   } catch (err) {
-    console.error('Cloudinary upload failed:', err);
+    console.error("Cloudinary upload failed:", err);
     return null;
   } finally {
     if (setLoading) setLoading(false);

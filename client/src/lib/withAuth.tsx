@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from './AuthContext';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./AuthContext";
 
 // Higher-order component to protect routes and handle authentication
 export function withAuth<P extends object>(
@@ -16,7 +16,7 @@ export function withAuth<P extends object>(
   const {
     requireAuth = true,
     allowedRoles = [],
-    redirectTo = '/login'
+    redirectTo = "/login",
   } = options;
 
   return function AuthenticatedComponent(props: P) {
@@ -29,15 +29,23 @@ export function withAuth<P extends object>(
 
       // If authentication is required but user is not logged in
       if (requireAuth && (!user || !token)) {
-        console.warn('Authentication required, redirecting to login');
+        console.warn("Authentication required, redirecting to login");
         router.push(redirectTo);
         return;
       }
 
       // If specific roles are required, check user role
-      if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
-        console.warn(`Access denied. Required roles: ${allowedRoles.join(', ')}, User role: ${user.role}`);
-        router.push('/unauthorized');
+      if (
+        allowedRoles.length > 0 &&
+        user &&
+        !allowedRoles.includes(user.role)
+      ) {
+        console.warn(
+          `Access denied. Required roles: ${allowedRoles.join(
+            ", "
+          )}, User role: ${user.role}`
+        );
+        router.push("/unauthorized");
         return;
       }
     }, [user, token, isLoading, router]);
@@ -45,9 +53,9 @@ export function withAuth<P extends object>(
     // Show loading while checking authentication
     if (isLoading) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="w-12 h-12 mx-auto border-b-2 border-blue-600 rounded-full animate-spin"></div>
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         </div>
@@ -68,15 +76,17 @@ export function withAuth<P extends object>(
 }
 
 // Hook to check authentication status and handle token expiration
-export function useAuthGuard(options: {
-  requireAuth?: boolean;
-  allowedRoles?: string[];
-  redirectTo?: string;
-} = {}) {
+export function useAuthGuard(
+  options: {
+    requireAuth?: boolean;
+    allowedRoles?: string[];
+    redirectTo?: string;
+  } = {}
+) {
   const {
     requireAuth = true,
     allowedRoles = [],
-    redirectTo = '/login'
+    redirectTo = "/login",
   } = options;
 
   const { user, token, isLoading } = useAuth();
@@ -88,15 +98,19 @@ export function useAuthGuard(options: {
 
     // If authentication is required but user is not logged in
     if (requireAuth && (!user || !token)) {
-      console.warn('Authentication required, redirecting to login');
+      console.warn("Authentication required, redirecting to login");
       router.push(redirectTo);
       return;
     }
 
     // If specific roles are required, check user role
     if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
-      console.warn(`Access denied. Required roles: ${allowedRoles.join(', ')}, User role: ${user.role}`);
-      router.push('/unauthorized');
+      console.warn(
+        `Access denied. Required roles: ${allowedRoles.join(
+          ", "
+        )}, User role: ${user.role}`
+      );
+      router.push("/unauthorized");
       return;
     }
   }, [user, token, isLoading, router, requireAuth, allowedRoles, redirectTo]);
@@ -106,6 +120,7 @@ export function useAuthGuard(options: {
     token,
     isLoading,
     isAuthenticated: !!(user && token),
-    hasRequiredRole: allowedRoles.length === 0 || (user && allowedRoles.includes(user.role))
+    hasRequiredRole:
+      allowedRoles.length === 0 || (user && allowedRoles.includes(user.role)),
   };
 }

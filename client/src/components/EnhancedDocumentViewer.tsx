@@ -65,29 +65,29 @@ export default function EnhancedDocumentViewer({
     const ext = fileName.split(".").pop()?.toLowerCase();
     switch (ext) {
       case "pdf":
-        return <FileText className="text-red-600 h-5 w-5" />;
+        return <FileText className="w-5 h-5 text-red-600" />;
       case "doc":
       case "docx":
-        return <FileText className="text-blue-600 h-5 w-5" />;
+        return <FileText className="w-5 h-5 text-blue-600" />;
       case "xls":
       case "xlsx":
-        return <FileSpreadsheet className="text-green-600 h-5 w-5" />;
+        return <FileSpreadsheet className="w-5 h-5 text-green-600" />;
       case "jpg":
       case "jpeg":
       case "png":
       case "gif":
-        return <FileImage className="text-purple-600 h-5 w-5" />;
+        return <FileImage className="w-5 h-5 text-purple-600" />;
       case "mp4":
       case "avi":
-        return <FileVideo className="text-pink-600 h-5 w-5" />;
+        return <FileVideo className="w-5 h-5 text-pink-600" />;
       case "mp3":
       case "wav":
-        return <FileAudio className="text-yellow-600 h-5 w-5" />;
+        return <FileAudio className="w-5 h-5 text-yellow-600" />;
       case "zip":
       case "rar":
-        return <FileArchive className="text-gray-600 h-5 w-5" />;
+        return <FileArchive className="w-5 h-5 text-gray-600" />;
       default:
-        return <File className="text-gray-600 h-5 w-5" />;
+        return <File className="w-5 h-5 text-gray-600" />;
     }
   };
 
@@ -153,19 +153,19 @@ export default function EnhancedDocumentViewer({
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-4">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+    <div className="p-4 bg-white rounded-lg shadow">
+      <h2 className="mb-4 text-xl font-semibold text-gray-900">
         Uploaded Documents
       </h2>
 
       {/* Search and filter */}
-      <div className="flex flex-col md:flex-row gap-2 mb-4">
+      <div className="flex flex-col gap-2 mb-4 md:flex-row">
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border px-3 py-2 rounded w-full md:w-1/2"
+          className="w-full px-3 py-2 border rounded md:w-1/2"
         />
         <div className="flex items-center gap-2">
           <label
@@ -179,7 +179,7 @@ export default function EnhancedDocumentViewer({
             name="fileType"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="border px-3 py-2 rounded"
+            className="px-3 py-2 border rounded"
           >
             <option value="all">All</option>
             <option value="image">Image</option>
@@ -192,7 +192,7 @@ export default function EnhancedDocumentViewer({
 
       {/* Scrollable table container */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
+        <table className="min-w-full text-sm divide-y divide-gray-200">
           <thead className="bg-gray-100">
             <tr>
               {["name", "type", "date"].map((col) => (
@@ -212,7 +212,7 @@ export default function EnhancedDocumentViewer({
           <tbody>
             {filteredDocuments.map((doc, i) => (
               <tr key={i} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-2 flex items-center gap-2">
+                <td className="flex items-center gap-2 px-4 py-2">
                   {getFileTypeIcon(doc.name)}
                   <span className="truncate max-w-[150px]">{doc.name}</span>
                 </td>
@@ -234,7 +234,7 @@ export default function EnhancedDocumentViewer({
                     </a>
                     <button
                       onClick={() => handleDownload(doc)}
-                      className="text-green-600 hover:underline flex items-center gap-1"
+                      className="flex items-center gap-1 text-green-600 hover:underline"
                     >
                       <Download className="w-4 h-4" /> Download
                     </button>
@@ -254,7 +254,7 @@ export default function EnhancedDocumentViewer({
 
       {/* No docs fallback */}
       {filteredDocuments.length === 0 && (
-        <p className="text-center text-gray-500 mt-4">No documents found.</p>
+        <p className="mt-4 text-center text-gray-500">No documents found.</p>
       )}
     </div>
   );

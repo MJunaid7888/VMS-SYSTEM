@@ -95,8 +95,8 @@ export default function TrainingEnrollment({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center p-8">
+        <div className="w-8 h-8 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
         <span className="ml-2 text-gray-600">Loading trainings...</span>
       </div>
     );
@@ -104,12 +104,12 @@ export default function TrainingEnrollment({
 
   if (trainings.length === 0) {
     return (
-      <div className="bg-white shadow-md rounded-lg p-6 text-center">
-        <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+      <div className="p-6 text-center bg-white rounded-lg shadow-md">
+        <BookOpen className="w-12 h-12 mx-auto mb-4 text-gray-400" />
         <h3 className="text-lg font-medium text-gray-900">
           No trainings available
         </h3>
-        <p className="text-gray-500 mt-1">
+        <p className="mt-1 text-gray-500">
           There are no active trainings available at this time.
         </p>
       </div>
@@ -119,15 +119,15 @@ export default function TrainingEnrollment({
   const selectedTraining = getSelectedTraining();
 
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+    <div className="overflow-hidden bg-white rounded-lg shadow-md">
       <div className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-          <BookOpen className="h-5 w-5 text-blue-600 mr-2" />
+        <h2 className="flex items-center mb-4 text-xl font-semibold text-gray-900">
+          <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
           Enroll Visitor in Training
         </h2>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 flex items-start">
+          <div className="flex items-start p-4 mb-6 text-red-700 border-l-4 border-red-500 rounded bg-red-50">
             <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
             <div>
               <p className="font-medium">Error</p>
@@ -137,7 +137,7 @@ export default function TrainingEnrollment({
         )}
 
         {successMessage && (
-          <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded mb-6 flex items-start">
+          <div className="flex items-start p-4 mb-6 text-green-700 border-l-4 border-green-500 rounded bg-green-50">
             <CheckCircle className="h-5 w-5 mr-2 mt-0.5" />
             <div>
               <p className="font-medium">Success</p>
@@ -149,7 +149,7 @@ export default function TrainingEnrollment({
         <div className="mb-6">
           <label
             htmlFor="trainingSelect"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block mb-1 text-sm font-medium text-gray-700"
           >
             Select Training
           </label>
@@ -168,26 +168,26 @@ export default function TrainingEnrollment({
         </div>
 
         {selectedTraining && (
-          <div className="bg-gray-50 p-4 rounded-md mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="p-4 mb-6 rounded-md bg-gray-50">
+            <h3 className="mb-2 text-lg font-medium text-gray-900">
               {selectedTraining.title}
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="mb-4 text-sm text-gray-600">
               {selectedTraining.description}
             </p>
 
-            <div className="flex items-center text-sm text-gray-500 mb-2">
-              <span className="font-medium mr-2">Type:</span>
+            <div className="flex items-center mb-2 text-sm text-gray-500">
+              <span className="mr-2 font-medium">Type:</span>
               <span className="capitalize">{selectedTraining.type}</span>
             </div>
 
-            <div className="flex items-center text-sm text-gray-500 mb-2">
-              <span className="font-medium mr-2">Questions:</span>
+            <div className="flex items-center mb-2 text-sm text-gray-500">
+              <span className="mr-2 font-medium">Questions:</span>
               <span>{selectedTraining?.questions?.length}</span>
             </div>
 
             <div className="flex items-center text-sm text-gray-500">
-              <span className="font-medium mr-2">Required Score:</span>
+              <span className="mr-2 font-medium">Required Score:</span>
               <span>{selectedTraining.requiredScore}%</span>
             </div>
           </div>
@@ -197,16 +197,16 @@ export default function TrainingEnrollment({
           <button
             onClick={handleEnroll}
             disabled={isEnrolling || !selectedTrainingId}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isEnrolling ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                <div className="w-4 h-4 mr-2 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
                 Enrolling...
               </>
             ) : (
               <>
-                <Award className="mr-2 h-4 w-4" />
+                <Award className="w-4 h-4 mr-2" />
                 Enroll Visitor
               </>
             )}
@@ -214,9 +214,9 @@ export default function TrainingEnrollment({
         </div>
       </div>
 
-      <div className="bg-blue-50 p-4 border-t border-blue-100">
+      <div className="p-4 border-t border-blue-100 bg-blue-50">
         <div className="flex items-center text-sm text-blue-700">
-          <Award className="h-5 w-5 mr-2" />
+          <Award className="w-5 h-5 mr-2" />
           <p>
             After enrollment, visitors will need to complete the training and
             pass the assessment to receive a certificate.

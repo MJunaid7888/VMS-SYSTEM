@@ -88,13 +88,13 @@ export default function TokenExpirationWarning({
   }
 
   return (
-    <div className="fixed top-20 right-4 z-50 max-w-sm">
-      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow-lg">
+    <div className="fixed z-50 max-w-sm top-20 right-4">
+      <div className="p-4 border-l-4 border-yellow-400 rounded-lg shadow-lg bg-yellow-50">
         <div className="flex items-start">
           <div className="flex-shrink-0">
-            <AlertTriangle className="h-5 w-5 text-yellow-400" />
+            <AlertTriangle className="w-5 h-5 text-yellow-400" />
           </div>
-          <div className="ml-3 flex-1">
+          <div className="flex-1 ml-3">
             <h3 className="text-sm font-medium text-yellow-800">
               Session Expiring Soon
             </h3>
@@ -103,7 +103,7 @@ export default function TokenExpirationWarning({
               {timeRemaining !== 1 ? "s" : ""}. Would you like to extend your
               session?
             </p>
-            <div className="mt-3 flex space-x-2">
+            <div className="flex mt-3 space-x-2">
               <button
                 onClick={handleRefreshToken}
                 disabled={isRefreshing}
@@ -111,12 +111,12 @@ export default function TokenExpirationWarning({
               >
                 {isRefreshing ? (
                   <>
-                    <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                    <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
                     Refreshing...
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="h-3 w-3 mr-1" />
+                    <RefreshCw className="w-3 h-3 mr-1" />
                     Extend Session
                   </>
                 )}
@@ -129,14 +129,14 @@ export default function TokenExpirationWarning({
               </button>
             </div>
           </div>
-          <div className="ml-auto pl-3">
+          <div className="pl-3 ml-auto">
             <div className="-mx-1.5 -my-1.5">
               <button
                 onClick={handleDismiss}
                 className="inline-flex rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
               >
                 <span className="sr-only">Dismiss</span>
-                <X className="h-4 w-4" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>

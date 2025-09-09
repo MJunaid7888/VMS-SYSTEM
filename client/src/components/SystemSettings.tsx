@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/AuthContext';
-import { adminAPI, SystemSettings as SystemSettingsType } from '@/lib/api';
-import { Settings, Save, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { adminAPI, SystemSettings as SystemSettingsType } from "@/lib/api";
+import { Settings, Save, AlertCircle, CheckCircle, Info } from "lucide-react";
 
 export default function SystemSettings() {
- const [settings, setSettings] = useState<SystemSettingsType | null>(null);
+  const [settings, setSettings] = useState<SystemSettingsType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,55 +17,55 @@ export default function SystemSettings() {
     fetchSettings();
   }, [token]);
 
- const fetchSettings = async () => {
-  if (!token) return;
+  const fetchSettings = async () => {
+    if (!token) return;
 
-  setIsLoading(true);
-  setError(null);
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    const systemSettings = await adminAPI.getSystemSettings(token);
-    console.log(systemSettings);
-  
-    setSettings({
-      emailNotificationsEnabled: systemSettings?.emailNotificationsEnabled ?? true,
-      qrCodeExpiryHours: systemSettings?.qrCodeExpiryHours ?? 24,
-      visitorPhotoRequired: systemSettings?.visitorPhotoRequired ?? false,
-      trainingRequired: systemSettings?.trainingRequired ?? false,
-      systemVersion: systemSettings?.systemVersion ?? '1.0.0',
+    try {
+      const systemSettings = await adminAPI.getSystemSettings(token);
+      console.log(systemSettings);
+
+      setSettings({
+        emailNotificationsEnabled:
+          systemSettings?.emailNotificationsEnabled ?? true,
+        qrCodeExpiryHours: systemSettings?.qrCodeExpiryHours ?? 24,
+        visitorPhotoRequired: systemSettings?.visitorPhotoRequired ?? false,
+        trainingRequired: systemSettings?.trainingRequired ?? false,
+        systemVersion: systemSettings?.systemVersion ?? "1.0.0",
+      });
+    } catch (err) {
+      console.error("Error fetching system settings:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to load system settings"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleToggleSetting = (
+    key: keyof Omit<SystemSettingsType, "qrCodeExpiryHours" | "systemVersion">
+  ) => {
+    setSettings((prev) => {
+      if (!prev) return prev; // ⛔️ prevent toggle if settings not loaded
+      return {
+        ...prev,
+        [key]: !prev[key],
+      };
     });
-  } catch (err) {
-    console.error('Error fetching system settings:', err);
-    setError(err instanceof Error ? err.message : 'Failed to load system settings');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-
-const handleToggleSetting = (
-  key: keyof Omit<SystemSettingsType, 'qrCodeExpiryHours' | 'systemVersion'>
-) => {
-  setSettings((prev) => {
-    if (!prev) return prev; // ⛔️ prevent toggle if settings not loaded
-    return {
-      ...prev,
-      [key]: !prev[key],
-    };
-  });
-};
-
-
-const handleQrCodeExpiryChange = (value: number) => {
-  setSettings((prev) => {
-    if (!prev) return prev;
-    return {
-      ...prev,
-      qrCodeExpiryHours: value,
-    };
-  });
-};
-
+  const handleQrCodeExpiryChange = (value: number) => {
+    setSettings((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        qrCodeExpiryHours: value,
+      };
+    });
+  };
 
   const handleSaveSettings = async () => {
     if (!token) return;
@@ -76,13 +76,14 @@ const handleQrCodeExpiryChange = (value: number) => {
 
     try {
       await adminAPI.updateSystemSettings(token, settings);
-      setSuccessMessage('System settings updated successfully');
+      setSuccessMessage("System settings updated successfully");
       fetchSettings();
       console.log(settings);
-      
     } catch (err) {
-      console.error('Error saving system settings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save system settings');
+      console.error("Error saving system settings:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to save system settings"
+      );
     } finally {
       setIsSaving(false);
     }
@@ -98,7 +99,7 @@ const handleQrCodeExpiryChange = (value: number) => {
   }
 
   // Check if user is admin
-  if (user?.role !== 'admin') {
+  if (user?.role !== "admin") {
     return (
       <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
         <div className="flex items-start">
@@ -141,20 +142,28 @@ const handleQrCodeExpiryChange = (value: number) => {
 
       <div className="space-y-6">
         <div className="border-b border-gray-200 pb-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">General Settings</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            General Settings
+          </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Email Notifications</p>
-                <p className="text-sm text-gray-500">Enable email notifications system-wide</p>
+                <p className="text-sm font-medium text-gray-900">
+                  Email Notifications
+                </p>
+                <p className="text-sm text-gray-500">
+                  Enable email notifications system-wide
+                </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
-                  placeholder='email notif'
+                  placeholder="email notif"
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings?.emailNotificationsEnabled}
-                  onChange={() => handleToggleSetting('emailNotificationsEnabled')}
+                  onChange={() =>
+                    handleToggleSetting("emailNotificationsEnabled")
+                  }
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
@@ -162,8 +171,12 @@ const handleQrCodeExpiryChange = (value: number) => {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Visitor Photo Required</p>
-                <p className="text-sm text-gray-500">Require visitors to upload a photo during registration</p>
+                <p className="text-sm font-medium text-gray-900">
+                  Visitor Photo Required
+                </p>
+                <p className="text-sm text-gray-500">
+                  Require visitors to upload a photo during registration
+                </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -171,7 +184,7 @@ const handleQrCodeExpiryChange = (value: number) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings?.visitorPhotoRequired}
-                  onChange={() => handleToggleSetting('visitorPhotoRequired')}
+                  onChange={() => handleToggleSetting("visitorPhotoRequired")}
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
@@ -179,16 +192,20 @@ const handleQrCodeExpiryChange = (value: number) => {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Training Required</p>
-                <p className="text-sm text-gray-500">Require visitors to complete training before check-in</p>
+                <p className="text-sm font-medium text-gray-900">
+                  Training Required
+                </p>
+                <p className="text-sm text-gray-500">
+                  Require visitors to complete training before check-in
+                </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
-                  placeholder='checkbox'
+                  placeholder="checkbox"
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings?.trainingRequired}
-                  onChange={() => handleToggleSetting('trainingRequired')}
+                  onChange={() => handleToggleSetting("trainingRequired")}
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
@@ -197,10 +214,15 @@ const handleQrCodeExpiryChange = (value: number) => {
         </div>
 
         <div className="border-b border-gray-200 pb-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Security Settings</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Security Settings
+          </h3>
           <div className="space-y-4">
             <div>
-              <label htmlFor="qrCodeExpiry" className="block text-sm font-medium text-gray-900 mb-1">
+              <label
+                htmlFor="qrCodeExpiry"
+                className="block text-sm font-medium text-gray-900 mb-1"
+              >
                 QR Code Expiry (Hours)
               </label>
               <div className="flex items-center">
@@ -210,7 +232,9 @@ const handleQrCodeExpiryChange = (value: number) => {
                   min="1"
                   max="168"
                   value={settings?.qrCodeExpiryHours}
-                  onChange={(e) => handleQrCodeExpiryChange(parseInt(e.target.value) || 24)}
+                  onChange={(e) =>
+                    handleQrCodeExpiryChange(parseInt(e.target.value) || 24)
+                  }
                   className="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-500">hours</span>
@@ -223,7 +247,9 @@ const handleQrCodeExpiryChange = (value: number) => {
         </div>
 
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">System Information</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            System Information
+          </h3>
           <div className="bg-gray-50 p-4 rounded-md">
             <div className="flex items-center text-sm text-gray-500 mb-2">
               <span className="font-medium mr-2">System Version:</span>
