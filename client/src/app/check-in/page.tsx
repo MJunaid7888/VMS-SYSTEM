@@ -218,11 +218,12 @@ export default function FormPage() {
             ? visitorForm.hostEmployee
             : contractorForm.hostEmployee
         } has been notified of your upcoming visit on ${new Date(
-          formType === "contractor"
+          formType === "visitor"
             ? visitorForm.visitStartDate
             : contractorForm.visitStartDate
         ).toLocaleDateString()}.`
       );
+
       setTimeout(() => {
         setError("");
       }, 3000);
@@ -268,7 +269,14 @@ export default function FormPage() {
           form={contractorForm}
           handleChange={handleChange}
           handleSubmit={handleSubmit}
-          setFormType={setFormType}
+          setFormType={(type) => {
+            if (type === "visitor") {
+              alert("Visitor Form is Currently Disabled");
+              setFormType("contractor");
+            } else {
+              setFormType(type);
+            }
+          }}
           error={error}
           success={success}
         />
