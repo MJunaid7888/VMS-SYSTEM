@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { newVisitorAPI, Doc } from "@/lib/api";
 import { Upload, File, X, AlertCircle, CheckCircle } from "lucide-react";
-import { convertFileToBase64, uploadBase64File } from "../utils"; // ensure you have this
+import { convertFileToBase64, uploadBase64File } from "../utils";
 
 interface DocumentUploaderProps {
   visitorId: string;

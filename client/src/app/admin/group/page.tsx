@@ -1,41 +1,48 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { adminAPI, hallAPI } from '@/lib/api';
-import { useAuth } from '@/lib/AuthContext';
-import GroupCreator from '@/components/GroupCreate';
-import GroupMapper from '@/components/GroupMapper';
-import GroupListWithMembers from '@/components/GroupListWithMemders';
+import { useEffect, useState } from "react";
+import { adminAPI, hallAPI } from "@/lib/api";
+import { useAuth } from "@/lib/AuthContext";
+import GroupCreator from "@/components/GroupCreate";
+import GroupMapper from "@/components/GroupMapper";
+import GroupListWithMembers from "@/components/GroupListWithMemders";
 
-function HallApiManager({ onSave }: { onSave: (hall: string, url: string) => void }) {
-  const [hall, setHall] = useState('');
-  const [apiUrl, setApiUrl] = useState('');
+function HallApiManager({
+  onSave,
+}: {
+  onSave: (hall: string, url: string) => void;
+}) {
+  const [hall, setHall] = useState("");
+  const [apiUrl, setApiUrl] = useState("");
 
   const handleSave = () => {
     if (hall && apiUrl) {
       onSave(hall, apiUrl);
-      setHall('');
-      setApiUrl('');
+      setHall("");
+      setApiUrl("");
     }
   };
 
   return (
     <div className="my-4">
-      <h2 className="font-bold text-lg">Add Hall API Route</h2>
+      <h2 className="text-lg font-bold">Add Hall API Route</h2>
       <div className="flex flex-col gap-2 mt-2">
         <input
           value={hall}
           onChange={(e) => setHall(e.target.value)}
           placeholder="Hall name (e.g. East Wing)"
-          className="border px-2 py-1 rounded"
+          className="px-2 py-1 border rounded"
         />
         <input
           value={apiUrl}
           onChange={(e) => setApiUrl(e.target.value)}
           placeholder="API URL (e.g. https://hall.example.com/api/groups)"
-          className="border px-2 py-1 rounded"
+          className="px-2 py-1 border rounded"
         />
-        <button onClick={handleSave} className="bg-blue-600 text-white px-3 py-1 rounded w-fit">
+        <button
+          onClick={handleSave}
+          className="px-3 py-1 text-white bg-blue-600 rounded w-fit"
+        >
           Save API Route
         </button>
       </div>
@@ -46,22 +53,22 @@ function HallApiManager({ onSave }: { onSave: (hall: string, url: string) => voi
 export default function AdminGroupPage() {
   const { token } = useAuth();
   const [hallApis, setHallApis] = useState<Record<string, string>>({});
-  const [selectedHall, setSelectedHall] = useState<string>('');
+  const [selectedHall, setSelectedHall] = useState<string>("");
 
   const loadGroups = async () => {
-  if (!token) return;
+    if (!token) return;
 
-  try {
-    if (selectedHall && hallApis[selectedHall]) {
-      const groups = await hallAPI.fetchExternalGroups(selectedHall, token);
-      console.log('Groups from hall API:', groups);
-    } else {
-      await adminAPI.fetchGroups(token);
+    try {
+      if (selectedHall && hallApis[selectedHall]) {
+        const groups = await hallAPI.fetchExternalGroups(selectedHall, token);
+        console.log("Groups from hall API:", groups);
+      } else {
+        await adminAPI.fetchGroups(token);
+      }
+    } catch (err: any) {
+      console.error("Failed to load groups:", err.message);
     }
-  } catch (err: any) {
-    console.error('Failed to load groups:', err.message);
-  }
-};
+  };
 
   useEffect(() => {
     loadGroups();
@@ -72,13 +79,15 @@ export default function AdminGroupPage() {
       await hallAPI.saveHallApi(hall, url); // save to backend
       setHallApis((prev) => ({ ...prev, [hall]: url })); // update local
     } catch (err: any) {
-      console.error('Failed to save hall API:', err.message);
+      console.error("Failed to save hall API:", err.message);
     }
   };
 
   return (
     <div>
-      <h1 className="text-lg sm:text-2xl lg:text-3xl text-gray-900 font-bold">Group Management</h1>
+      <h1 className="text-lg font-bold text-gray-900 sm:text-2xl lg:text-3xl">
+        Group Management
+      </h1>
       <HallApiManager onSave={handleSaveApi} />
 
       <div className="my-4">
@@ -86,7 +95,7 @@ export default function AdminGroupPage() {
         <select
           value={selectedHall}
           onChange={(e) => setSelectedHall(e.target.value)}
-          className="border px-2 py-1 ml-2 rounded"
+          className="px-2 py-1 ml-2 border rounded"
         >
           <option value="">Internal Groups</option>
           {Object.keys(hallApis).map((hall) => (

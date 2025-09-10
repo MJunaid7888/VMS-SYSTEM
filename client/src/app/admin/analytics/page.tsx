@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/lib/AuthContext';
-import { analyticsAPI } from '@/lib/api';
-import { ArrowLeft } from 'lucide-react';
-import AnalyticsDashboard from '@/components/charts/AnalyticsDashboard';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/lib/AuthContext";
+import { analyticsAPI } from "@/lib/api";
+import { ArrowLeft } from "lucide-react";
+import AnalyticsDashboard from "@/components/charts/AnalyticsDashboard";
 
 interface TrainingMetrics {
   totalTrainings: number;
@@ -20,9 +20,10 @@ interface TrainingMetrics {
 }
 
 export default function AnalyticsPage() {
-  const [trainingMetrics, setTrainingMetrics] = useState<TrainingMetrics | null>(null);
+  const [trainingMetrics, setTrainingMetrics] =
+    useState<TrainingMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const { user, token } = useAuth();
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function AnalyticsPage() {
   // Redirect if not logged in
   useEffect(() => {
     if (!user || !token) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, token, router]);
 
@@ -41,7 +42,7 @@ export default function AnalyticsPage() {
 
       try {
         setIsLoading(true);
-        setError('');
+        setError("");
 
         const [trainingData] = await Promise.all([
           analyticsAPI.getTrainingMetrics(token),
@@ -49,7 +50,9 @@ export default function AnalyticsPage() {
 
         setTrainingMetrics(trainingData as TrainingMetrics);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch analytics data');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch analytics data"
+        );
       } finally {
         setIsLoading(false);
       }
@@ -65,18 +68,21 @@ export default function AnalyticsPage() {
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <Link href="/admin/dashboard" className="flex items-center text-blue-900 hover:text-blue-700">
-          <ArrowLeft className="mr-2 h-5 w-5" />
+        <Link
+          href="/admin/dashboard"
+          className="flex items-center text-blue-900 hover:text-blue-700"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Dashboard
         </Link>
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-40 text-blue-600 font-medium">
+        <div className="flex items-center justify-center h-40 font-medium text-blue-600">
           Loading analytics...
         </div>
       ) : error ? (
-        <div className="bg-red-100 text-red-800 p-4 rounded-md mb-6 text-center">
+        <div className="p-4 mb-6 text-center text-red-800 bg-red-100 rounded-md">
           {error}
         </div>
       ) : (
@@ -84,22 +90,30 @@ export default function AnalyticsPage() {
           <AnalyticsDashboard />
           {trainingMetrics ? (
             <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+                <div className="p-4 rounded-lg bg-blue-50">
                   <p className="text-sm text-gray-500">Total Trainings</p>
-                  <p className="text-2xl font-bold">{trainingMetrics.totalTrainings}</p>
+                  <p className="text-2xl font-bold">
+                    {trainingMetrics.totalTrainings}
+                  </p>
                 </div>
-                <div className="bg-green-50 p-4 rounded-lg">
+                <div className="p-4 rounded-lg bg-green-50">
                   <p className="text-sm text-gray-500">Completed</p>
-                  <p className="text-2xl font-bold">{trainingMetrics.completedTrainings}</p>
+                  <p className="text-2xl font-bold">
+                    {trainingMetrics.completedTrainings}
+                  </p>
                 </div>
-                <div className="bg-red-50 p-4 rounded-lg">
+                <div className="p-4 rounded-lg bg-red-50">
                   <p className="text-sm text-gray-500">Failed</p>
-                  <p className="text-2xl font-bold">{trainingMetrics.failedTrainings}</p>
+                  <p className="text-2xl font-bold">
+                    {trainingMetrics.failedTrainings}
+                  </p>
                 </div>
-                <div className="bg-yellow-50 p-4 rounded-lg">
+                <div className="p-4 rounded-lg bg-yellow-50">
                   <p className="text-sm text-gray-500">Average Score</p>
-                  <p className="text-2xl font-bold">{trainingMetrics.averageScore}%</p>
+                  <p className="text-2xl font-bold">
+                    {trainingMetrics.averageScore}%
+                  </p>
                 </div>
               </div>
             </div>

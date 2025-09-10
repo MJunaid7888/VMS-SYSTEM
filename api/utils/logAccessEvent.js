@@ -3,7 +3,7 @@ export const logAccessEvent = async ({
   name,
   role,
   status,
-  reason = '',
+  reason = "",
   location,
   accessedAt = new Date(),
 }) => {
@@ -19,10 +19,10 @@ export const logAccessEvent = async ({
     });
 
     await log.save();
-    console.log('Access log saved.');
+    console.log("Access log saved.");
     return log;
   } catch (error) {
-    console.error('Error saving access log:', error);
+    console.error("Error saving access log:", error);
     throw error;
   }
 };
