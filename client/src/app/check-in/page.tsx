@@ -110,9 +110,7 @@ export default function FormPage() {
   const [formType, setFormType] = useState<"visitor" | "contractor">(
     "contractor"
   );
-  const [visitorForm, setVisitorForm] = useState(
-    defaultVisitorForm("contractor")
-  );
+  const [visitorForm, setVisitorForm] = useState(defaultVisitorForm("visitor"));
   const [contractorForm, setContractorForm] = useState(
     defaultContractorForm("contractor")
   );
@@ -252,35 +250,34 @@ export default function FormPage() {
   };
 
   return (
-    <>
-      {formType === "visitor" ? (
-        <VisitorForm
-          setForm={setVisitorForm}
-          form={visitorForm}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          setFormType={setFormType}
-          error={error}
-          success={success}
-        />
-      ) : (
-        <ContractorForm
-          setForm={setContractorForm}
-          form={contractorForm}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          setFormType={(type) => {
-            if (type === "visitor") {
-              alert("Visitor Form is Currently Disabled");
-              setFormType("contractor");
-            } else {
-              setFormType(type);
-            }
-          }}
-          error={error}
-          success={success}
-        />
-      )}
-    </>
+    // >>>>>>>>>>>>>>>> Disabling Visitor Form Temporarily <<<<<<<<<<<<<<<<
+    // <VisitorForm
+    //   setForm={setVisitorForm}
+    //   form={visitorForm}
+    //   handleChange={handleChange}
+    //   handleSubmit={handleSubmit}
+    //   setFormType={setFormType}
+    //   error={error}
+    //   success={success}
+    // />
+    // >>>>>>>>>>>>>>>> Disabling Visitor Form Temporarily <<<<<<<<<<<<<<<<
+
+    // Rendering Contractor Form
+    <ContractorForm
+      setForm={setContractorForm}
+      form={contractorForm}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      setFormType={(type) => {
+        if (type === "visitor") {
+          alert("Visitor Form is Currently Disabled");
+          setFormType("contractor");
+        } else {
+          setFormType(type);
+        }
+      }}
+      error={error}
+      success={success}
+    />
   );
 }
