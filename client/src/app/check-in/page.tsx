@@ -68,7 +68,7 @@ type VisitorFormData = {
   visitEndDate: string;
   purpose: string;
   agreed: string;
-  pics?: string; // ✅ optional here
+  pics?: string;
 };
 
 const defaultVisitorForm = (formType: string): VisitorFormData => ({
@@ -107,8 +107,12 @@ const defaultContractorForm = (formType: string): FormData => ({
 });
 
 export default function FormPage() {
-  const [formType, setFormType] = useState<"visitor" | "contractor">("visitor");
-  const [visitorForm, setVisitorForm] = useState(defaultVisitorForm("visitor"));
+  const [formType, setFormType] = useState<"visitor" | "contractor">(
+    "contractor"
+  );
+  const [visitorForm, setVisitorForm] = useState(
+    defaultVisitorForm("contractor")
+  );
   const [contractorForm, setContractorForm] = useState(
     defaultContractorForm("contractor")
   );
@@ -143,7 +147,12 @@ export default function FormPage() {
 
   useEffect(() => {
     if (formType === "visitor") {
-      setVisitorForm((prev) => ({ ...prev, visitorCategory: formType }));
+      alert("Visitor Form is Currently Disabled");
+      // Temporarily disabling visitor form and showing contractor form instead
+      setFormType("contractor");
+      // Temporarily disabling visitor form
+      // return;
+      // setVisitorForm((prev) => ({ ...prev, visitorCategory: formType }));
     } else {
       setContractorForm((prev) => ({ ...prev, visitorCategory: formType }));
     }
