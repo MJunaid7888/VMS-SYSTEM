@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 // import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { newVisitorAPI, VisitorForm } from '@/lib/api';
-import { useAuth } from '@/lib/AuthContext';
+import Link from "next/link";
+import Image from "next/image";
+import { newVisitorAPI, VisitorForm } from "@/lib/api";
+import { useAuth } from "@/lib/AuthContext";
 import {
   User,
   Mail,
@@ -14,13 +14,13 @@ import {
   AlertCircle,
   Clock,
   LogOut,
-  QrCode
-} from 'lucide-react';
-import AppBar from '@/components/AppBar';
-import QRCodeScanner from '@/components/QRCodeScanner';
+  QrCode,
+} from "lucide-react";
+import AppBar from "@/components/AppBar";
+import QRCodeScanner from "@/components/QRCodeScanner";
 
 export default function CheckOut() {
-  const [searchEmail, setSearchEmail] = useState('');
+  const [searchEmail, setSearchEmail] = useState("");
   const [searchResults, setSearchResults] = useState<VisitorForm[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function CheckOut() {
     if (e) e.preventDefault();
 
     if (!searchEmail) {
-      setError('Please enter an email address');
+      setError("Please enter an email address");
       return;
     }
 
@@ -50,19 +50,20 @@ export default function CheckOut() {
 
     try {
       const visitors = await newVisitorAPI.searchByEmail(searchEmail);
-      
+
       // Filter for only checked-in visitors
       const checkedInVisitors = visitors;
 
       if (!checkedInVisitors) {
-        setError('No checked-in visitors found with this email address');
-     
+        setError("No checked-in visitors found with this email address");
       } else {
         setSearchResults([checkedInVisitors]);
       }
     } catch (err) {
-      console.error('Error searching for visitor:', err);
-      setError(err instanceof Error ? err.message : 'Failed to search for visitor');
+      console.error("Error searching for visitor:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to search for visitor"
+      );
     } finally {
       setIsSearching(false);
     }
@@ -74,17 +75,23 @@ export default function CheckOut() {
     setSuccess(null);
 
     try {
-      await newVisitorAPI.checkOutVisitor(visitorId, token || '');
+      await newVisitorAPI.checkOutVisitor(visitorId, token || "");
 
       // Update the search results to reflect the change
-      setSearchResults(prev =>
-        prev.filter(visitor => visitor._id !== visitorId)
+      setSearchResults((prev) =>
+        prev.filter((visitor) => visitor._id !== visitorId)
       );
 
-      setSuccess('You have been checked out successfully. Thank you for your visit!');
+      setSuccess(
+        "You have been checked out successfully. Thank you for your visit!"
+      );
     } catch (err) {
-      console.error('Error checking out visitor:', err);
-      setError(err instanceof Error ? err.message : 'Failed to check out. Please try again or contact reception.');
+      console.error("Error checking out visitor:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to check out. Please try again or contact reception."
+      );
     } finally {
       setCheckingOut(null);
     }
@@ -96,48 +103,52 @@ export default function CheckOut() {
 
       {/* QR Code Scanner */}
       {showScanner && token && (
-        <QRCodeScanner
-          token={token}
-          onClose={() => setShowScanner(false)}
-        />
+        <QRCodeScanner token={token} onClose={() => setShowScanner(false)} />
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="space-y-6 lg:col-span-3">
             <div className="flex items-center mb-2">
-              <div className="bg-blue-100 p-2 rounded-full mr-3">
-                <LogOut className="h-6 w-6 text-blue-700" />
+              <div className="p-2 mr-3 bg-blue-100 rounded-full">
+                <LogOut className="w-6 h-6 text-blue-700" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-blue-900">Visitor Check-Out</h1>
+              <h1 className="text-3xl font-bold text-blue-900 md:text-4xl">
+                Visitor Check-Out
+              </h1>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-gray-600">
               Please enter your email address to find your visit and check out.
             </p>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6 flex items-start">
-                <div className="bg-red-100 p-2 rounded-full mr-4 flex-shrink-0">
-                  <AlertCircle className="h-5 w-5 text-red-600" />
+              <div className="flex items-start px-6 py-4 mb-6 text-red-700 border border-red-200 rounded-lg bg-red-50">
+                <div className="flex-shrink-0 p-2 mr-4 bg-red-100 rounded-full">
+                  <AlertCircle className="w-5 h-5 text-red-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-lg mb-1">Check-Out Error</p>
+                  <p className="mb-1 text-lg font-medium">Check-Out Error</p>
                   <p className="text-red-700">{error}</p>
                 </div>
               </div>
             )}
 
             {success && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg mb-6 flex items-start">
-                <div className="bg-green-100 p-2 rounded-full mr-4 flex-shrink-0">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="flex items-start px-6 py-4 mb-6 text-green-700 border border-green-200 rounded-lg bg-green-50">
+                <div className="flex-shrink-0 p-2 mr-4 bg-green-100 rounded-full">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-lg mb-1">Check-Out Successful!</p>
+                  <p className="mb-1 text-lg font-medium">
+                    Check-Out Successful!
+                  </p>
                   <p className="text-green-700">{success}</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Link href="/" className="bg-white border border-green-300 text-green-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-green-50 transition-colors">
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    <Link
+                      href="/"
+                      className="px-4 py-2 text-sm font-medium text-green-700 transition-colors bg-white border border-green-300 rounded-md hover:bg-green-50"
+                    >
                       Return to Home
                     </Link>
                   </div>
@@ -146,22 +157,22 @@ export default function CheckOut() {
             )}
 
             {/* Search Form */}
-            <div className="bg-white shadow-md rounded-xl p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Mail className="h-5 w-5 text-blue-600 mr-2" />
+            <div className="p-6 mb-6 bg-white shadow-md rounded-xl">
+              <h2 className="flex items-center mb-4 text-xl font-semibold">
+                <Mail className="w-5 h-5 mr-2 text-blue-600" />
                 Find Your Visit
               </h2>
 
               <form onSubmit={searchVisitor} className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-grow relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <div className="relative flex-grow">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Mail className="w-5 h-5 text-gray-400" />
                     </div>
                     <input
                       type="email"
                       placeholder="Enter your email address"
-                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full px-4 py-3 pl-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={searchEmail}
                       onChange={handleSearchChange}
                       required
@@ -170,19 +181,35 @@ export default function CheckOut() {
                   <button
                     type="submit"
                     disabled={isSearching || !searchEmail}
-                    className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg disabled:bg-blue-300 transition-colors flex items-center justify-center whitespace-nowrap shadow-sm"
+                    className="flex items-center justify-center px-6 py-3 text-white transition-colors bg-blue-700 rounded-lg shadow-sm hover:bg-blue-800 disabled:bg-blue-300 whitespace-nowrap"
                   >
                     {isSearching ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="w-4 h-4 mr-2 -ml-1 text-white animate-spin"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         Searching...
                       </>
                     ) : (
                       <>
-                        <Search className="h-4 w-4 mr-2" />
+                        <Search className="w-4 h-4 mr-2" />
                         Find My Visit
                       </>
                     )}
@@ -190,18 +217,18 @@ export default function CheckOut() {
                 </div>
               </form>
 
-              <div className="mt-4 flex items-center justify-center">
-                <div className="border-t border-gray-200 w-full"></div>
-                <span className="px-3 bg-white text-gray-500 text-sm">OR</span>
-                <div className="border-t border-gray-200 w-full"></div>
+              <div className="flex items-center justify-center mt-4">
+                <div className="w-full border-t border-gray-200"></div>
+                <span className="px-3 text-sm text-gray-500 bg-white">OR</span>
+                <div className="w-full border-t border-gray-200"></div>
               </div>
 
-              <div className="mt-4 flex justify-center">
+              <div className="flex justify-center mt-4">
                 <button
                   onClick={() => setShowScanner(true)}
-                  className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors"
+                  className="flex items-center justify-center px-4 py-2 text-gray-800 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200"
                 >
-                  <QrCode className="mr-2 h-5 w-5" />
+                  <QrCode className="w-5 h-5 mr-2" />
                   Scan QR Code
                 </button>
               </div>
@@ -209,38 +236,59 @@ export default function CheckOut() {
 
             {/* Search Results */}
             {searchResults.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="bg-blue-50 px-5 py-3 border-b border-gray-200 flex items-center">
-                  <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
-                  <h5 className="font-medium text-blue-900">Found {searchResults.length} active {searchResults.length === 1 ? 'visit' : 'visits'}</h5>
+              <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+                <div className="flex items-center px-5 py-3 border-b border-gray-200 bg-blue-50">
+                  <CheckCircle className="w-5 h-5 mr-2 text-blue-600" />
+                  <h5 className="font-medium text-blue-900">
+                    Found {searchResults.length} active{" "}
+                    {searchResults.length === 1 ? "visit" : "visits"}
+                  </h5>
                 </div>
                 <ul className="divide-y divide-gray-200">
                   {searchResults.map((visitor) => (
-                    <li key={visitor._id} className="p-5 hover:bg-blue-50 transition-colors">
-                      <div className="flex items-center justify-between flex-wrap gap-4">
+                    <li
+                      key={visitor._id}
+                      className="p-5 transition-colors hover:bg-blue-50"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-4">
                         <div>
                           <div className="flex items-center">
-                            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 h-10 w-10 rounded-full flex items-center justify-center mr-3 text-white shadow-sm">
+                            <div className="flex items-center justify-center w-10 h-10 mr-3 text-white rounded-full shadow-sm bg-gradient-to-br from-blue-500 to-indigo-600">
                               <span className="font-medium">
-                                {visitor.firstName?.charAt(0)}{visitor.lastName?.charAt(0)}
+                                {visitor.firstName?.charAt(0)}
+                                {visitor.lastName?.charAt(0)}
                               </span>
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{visitor.firstName} {visitor.lastName}</p>
-                              <p className="text-sm text-gray-500">{visitor.email}</p>
+                              <p className="font-medium text-gray-900">
+                                {visitor.firstName} {visitor.lastName}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {visitor.email}
+                              </p>
                             </div>
                           </div>
-                          <div className="mt-3 ml-13 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-                            <p className="text-sm text-gray-500 flex items-center">
-                              <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                              <span className="font-medium mr-1">Check-in time:</span>
+                          <div className="grid grid-cols-1 mt-3 ml-13 sm:grid-cols-2 gap-x-6 gap-y-1">
+                            <p className="flex items-center text-sm text-gray-500">
+                              <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                              <span className="mr-1 font-medium">
+                                Check-in time:
+                              </span>
                               {visitor.createdAt
-                                ? new Date(visitor.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                : 'Not recorded'}
+                                ? new Date(
+                                    visitor.createdAt
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : "Not recorded"}
                             </p>
-                            <p className="text-sm text-gray-500 flex items-center">
-                              <User className="h-4 w-4 text-gray-400 mr-2" />
-                              <span className="font-medium mr-1">Host:</span> {visitor.hostEmployee || 'Not specified'}
+                            <p className="flex items-center text-sm text-gray-500">
+                              <User className="w-4 h-4 mr-2 text-gray-400" />
+                              <span className="mr-1 font-medium">
+                                Host:
+                              </span>{" "}
+                              {visitor.hostEmployee || "Not specified"}
                             </p>
                           </div>
                         </div>
@@ -251,15 +299,31 @@ export default function CheckOut() {
                         >
                           {checkingOut === visitor._id ? (
                             <>
-                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              <svg
+                                className="w-4 h-4 mr-2 -ml-1 text-white animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
                               </svg>
                               Processing...
                             </>
                           ) : (
                             <>
-                              <LogOut className="h-4 w-4 mr-2" />
+                              <LogOut className="w-4 h-4 mr-2" />
                               Check Out
                             </>
                           )}
@@ -273,32 +337,36 @@ export default function CheckOut() {
           </div>
 
           {/* Side Content */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white shadow-md rounded-xl p-6">
-              <h2 className="text-xl font-semibold mb-4">Check-Out Instructions</h2>
+          <div className="space-y-6 lg:col-span-2">
+            <div className="p-6 bg-white shadow-md rounded-xl">
+              <h2 className="mb-4 text-xl font-semibold">
+                Check-Out Instructions
+              </h2>
               <div className="space-y-4 text-gray-600">
                 <p>
-                  Please check out before leaving the premises. This helps us maintain accurate records and ensure security.
+                  Please check out before leaving the premises. This helps us
+                  maintain accurate records and ensure security.
                 </p>
-                <ol className="list-decimal pl-5 space-y-2">
+                <ol className="pl-5 space-y-2 list-decimal">
                   <li>Enter the email address you used during check-in</li>
                   <li>Select your visit from the list</li>
                   <li>Click the &quot;Check Out&quot; button</li>
                   <li>Return your visitor badge to reception</li>
                 </ol>
-                <p className="text-sm bg-blue-50 p-3 rounded-lg mt-4">
-                  If you have any issues checking out, please contact the reception desk for assistance.
+                <p className="p-3 mt-4 text-sm rounded-lg bg-blue-50">
+                  If you have any issues checking out, please contact the
+                  reception desk for assistance.
                 </p>
               </div>
             </div>
 
-            <div className="bg-white shadow-md rounded-xl overflow-hidden">
+            <div className="overflow-hidden bg-white shadow-md rounded-xl">
               <Image
                 src="/reception.jpeg"
                 alt="Reception"
                 width={500}
                 height={300}
-                className="w-full h-48 object-cover"
+                className="object-cover w-full h-48"
               />
             </div>
           </div>

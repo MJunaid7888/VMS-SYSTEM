@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/AuthContext';
-import { trainingAPI, Training } from '@/lib/api';
-import { ArrowLeft, Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
-import { convertFileToBase64, uploadBase64File } from "../../../../utils"
-
-
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/AuthContext";
+import { trainingAPI, Training } from "@/lib/api";
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { convertFileToBase64, uploadBase64File } from "../../../../utils";
 
 export default function CreateTrainingPage() {
   const router = useRouter();
@@ -17,100 +20,112 @@ export default function CreateTrainingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [videoUploadLoading, setVideoUploadLoading] = useState(false)
-  const [bookUploadLoading, setBookUploadLoading] = useState(false)
+  const [videoUploadLoading, setVideoUploadLoading] = useState(false);
+  const [bookUploadLoading, setBookUploadLoading] = useState(false);
 
   const [formData, setFormData] = useState<Partial<Training>>({
-    title: '',
-    description: '',
-    type: 'safety',
-    content: '',
+    title: "",
+    description: "",
+    type: "safety",
+    content: "",
     questions: [
       {
-        question: '',
-        options: ['', '', '', ''],
-        answer: 0
-      }
+        question: "",
+        options: ["", "", "", ""],
+        answer: 0,
+      },
     ],
-    videos: [{ name: '', url: '' }],
-    books: [{ name: '', url: '' }],
+    videos: [{ name: "", url: "" }],
+    books: [{ name: "", url: "" }],
     requiredScore: 70,
-    isActive: true
+    isActive: true,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleQuestionChange = (index: number, field: string, value: string) => {
-    setFormData(prev => {
+  const handleQuestionChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    setFormData((prev) => {
       const updatedQuestions = [...(prev.questions || [])];
       updatedQuestions[index] = {
         ...updatedQuestions[index],
-        [field]: value
+        [field]: value,
       };
       return {
         ...prev,
-        questions: updatedQuestions
+        questions: updatedQuestions,
       };
     });
   };
 
-  const handleOptionChange = (questionIndex: number, optionIndex: number, value: string) => {
-    setFormData(prev => {
+  const handleOptionChange = (
+    questionIndex: number,
+    optionIndex: number,
+    value: string
+  ) => {
+    setFormData((prev) => {
       const updatedQuestions = [...(prev.questions || [])];
       const updatedOptions = [...updatedQuestions[questionIndex].options];
       updatedOptions[optionIndex] = value;
       updatedQuestions[questionIndex] = {
         ...updatedQuestions[questionIndex],
-        options: updatedOptions
+        options: updatedOptions,
       };
       return {
         ...prev,
-        questions: updatedQuestions
+        questions: updatedQuestions,
       };
     });
   };
 
   const handleCorrectAnswerChange = (questionIndex: number, value: number) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updatedQuestions = [...(prev.questions || [])];
       updatedQuestions[questionIndex] = {
         ...updatedQuestions[questionIndex],
-        answer: value
+        answer: value,
       };
       return {
         ...prev,
-        questions: updatedQuestions
+        questions: updatedQuestions,
       };
     });
   };
 
   const addQuestion = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       questions: [
         ...(prev.questions || []),
         {
-          question: '',
-          options: ['', '', '', ''],
-          answer: 0
-        }
-      ]
+          question: "",
+          options: ["", "", "", ""],
+          answer: 0,
+        },
+      ],
     }));
   };
 
   const removeQuestion = (index: number) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updatedQuestions = [...(prev.questions || [])];
       updatedQuestions.splice(index, 1);
       return {
         ...prev,
-        questions: updatedQuestions
+        questions: updatedQuestions,
       };
     });
   };
@@ -119,30 +134,35 @@ export default function CreateTrainingPage() {
     e.preventDefault();
 
     if (!token) {
-      setError('You must be logged in to create a training module');
+      setError("You must be logged in to create a training module");
       return;
     }
 
     // Validate form
-    if (!formData.title || !formData.description || !formData.type || !formData.content) {
-      setError('Please fill in all required fields');
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.type ||
+      !formData.content
+    ) {
+      setError("Please fill in all required fields");
       return;
     }
 
     // Validate questions
     if (!formData.questions || formData.questions.length === 0) {
-      setError('Please add at least one question');
+      setError("Please add at least one question");
       return;
     }
 
     for (const question of formData.questions || []) {
       if (!question.question) {
-        setError('All questions must have content');
+        setError("All questions must have content");
         return;
       }
 
-      if (question.options.some(option => !option)) {
-        setError('All options must have content');
+      if (question.options.some((option) => !option)) {
+        setError("All options must have content");
         return;
       }
     }
@@ -155,15 +175,17 @@ export default function CreateTrainingPage() {
       // Create a new training module
       await trainingAPI.createTraining(formData, token);
 
-      setSuccess('Training module created successfully');
+      setSuccess("Training module created successfully");
 
       // Redirect to the training management page after a short delay
       setTimeout(() => {
-        router.push('/admin/training');
+        router.push("/admin/training");
       }, 1500);
     } catch (err) {
-      console.error('Error creating training module:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create training module');
+      console.error("Error creating training module:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to create training module"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -172,19 +194,20 @@ export default function CreateTrainingPage() {
   const MAX_VIDEO_SIZE_MB = 100;
   const MAX_BOOK_SIZE_MB = 20;
 
-
   type UploadEvent =
     | React.ChangeEvent<HTMLInputElement>
     | React.DragEvent<HTMLDivElement>;
 
-
   const handleVideoUpload = async (index: number, e: UploadEvent) => {
     e.preventDefault();
-    const file = "dataTransfer" in e ? e.dataTransfer.files?.[0] : e.target.files?.[0];
+    const file =
+      "dataTransfer" in e ? e.dataTransfer.files?.[0] : e.target.files?.[0];
 
     if (!file) return alert("No video selected");
 
-    const sanitizedFile = new File([file], file.name.replace(/\//g, '-'), { type: file.type });
+    const sanitizedFile = new File([file], file.name.replace(/\//g, "-"), {
+      type: file.type,
+    });
     const fileSizeInMB = sanitizedFile.size / (1024 * 1024);
 
     if (fileSizeInMB > MAX_VIDEO_SIZE_MB) {
@@ -195,18 +218,21 @@ export default function CreateTrainingPage() {
     try {
       setVideoUploadLoading(true);
       const base64 = await convertFileToBase64(sanitizedFile);
-      const url = await uploadBase64File(base64, "video", setVideoUploadLoading);
+      const url = await uploadBase64File(
+        base64,
+        "video",
+        setVideoUploadLoading
+      );
       setVideoUploadLoading(false);
 
       if (url) {
-        setFormData(prev => {
+        setFormData((prev) => {
           const updated = [...(prev.videos || [])];
           updated[index] = { name: file.name, url: url };
           const newFormData = { ...prev, videos: updated };
           console.log("Updated videos inside setFormData:", newFormData.videos); // ✅ See new values
           return newFormData;
         });
-
 
         console.log("Video upload successful");
       } else {
@@ -218,14 +244,16 @@ export default function CreateTrainingPage() {
     }
   };
 
-
   const handleBookUpload = async (index: number, e: UploadEvent) => {
     e.preventDefault();
-    const file = "dataTransfer" in e ? e.dataTransfer.files?.[0] : e.target.files?.[0];
+    const file =
+      "dataTransfer" in e ? e.dataTransfer.files?.[0] : e.target.files?.[0];
 
     if (!file) return alert("No book file selected");
 
-    const sanitizedFile = new File([file], file.name.replace(/\//g, '-'), { type: file.type });
+    const sanitizedFile = new File([file], file.name.replace(/\//g, "-"), {
+      type: file.type,
+    });
     const fileSizeInMB = sanitizedFile.size / (1024 * 1024);
 
     if (fileSizeInMB > MAX_BOOK_SIZE_MB) {
@@ -240,7 +268,7 @@ export default function CreateTrainingPage() {
       setBookUploadLoading(false);
 
       if (url) {
-        setFormData(prev => {
+        setFormData((prev) => {
           const updated = [...(prev.books || [])];
           updated[index] = { name: file.name, url: url }; // ✅ Update both name and url
           return { ...prev, books: updated };
@@ -257,11 +285,14 @@ export default function CreateTrainingPage() {
     }
   };
 
+  type VideoField = "name" | "url";
 
-  type VideoField = 'name' | 'url';
-
-  const handleVideoChange = (index: number, field: VideoField, value: string) => {
-    setFormData(prev => {
+  const handleVideoChange = (
+    index: number,
+    field: VideoField,
+    value: string
+  ) => {
+    setFormData((prev) => {
       const updated = [...(prev.videos || [])];
       updated[index] = { ...updated[index], [field]: value };
       return { ...prev, videos: updated };
@@ -269,62 +300,58 @@ export default function CreateTrainingPage() {
   };
 
   const addVideo = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      videos: [...(prev.videos || []), { name: '', url: '' }]
+      videos: [...(prev.videos || []), { name: "", url: "" }],
     }));
   };
 
   const removeVideo = (index: number) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updated = [...(prev.videos || [])];
       updated.splice(index, 1);
       return { ...prev, videos: updated };
     });
   };
 
-
-  type BookField = 'name' | 'url';
+  type BookField = "name" | "url";
 
   const handleBookChange = (index: number, field: BookField, value: string) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updated = [...(prev.books || [])]; // ✅ fix: use books not videos
       updated[index] = { ...updated[index], [field]: value };
       return { ...prev, books: updated }; // ✅ fix: return books not videos
     });
   };
 
-
   const addBook = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      books: [...(prev.books || []), { name: '', url: '' }]
+      books: [...(prev.books || []), { name: "", url: "" }],
     }));
   };
 
   const removeBook = (index: number) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updated = [...(prev.books || [])];
       updated.splice(index, 1);
       return { ...prev, books: updated };
     });
   };
 
-
   console.log(formData);
-  
-
-
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8 flex items-center">
+      <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="flex items-center mb-8">
           <Link href="/admin/training" className="mr-4">
-            <ArrowLeft className="h-5 w-5 text-gray-500" />
+            <ArrowLeft className="w-5 h-5 text-gray-500" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Create Training Module</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create Training Module
+            </h1>
             <p className="mt-2 text-gray-600">
               Create a new training module for visitors.
             </p>
@@ -332,7 +359,7 @@ export default function CreateTrainingPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 flex items-start">
+          <div className="flex items-start p-4 mb-6 text-red-700 border-l-4 border-red-500 rounded bg-red-50">
             <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
             <div>
               <p className="font-medium">Error</p>
@@ -342,7 +369,7 @@ export default function CreateTrainingPage() {
         )}
 
         {success && (
-          <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded mb-6 flex items-start">
+          <div className="flex items-start p-4 mb-6 text-green-700 border-l-4 border-green-500 rounded bg-green-50">
             <CheckCircle className="h-5 w-5 mr-2 mt-0.5" />
             <div>
               <p className="font-medium">Success</p>
@@ -351,10 +378,16 @@ export default function CreateTrainingPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 bg-white rounded-lg shadow-md"
+        >
+          <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="title"
+                className="block mb-1 text-sm font-medium text-gray-700"
+              >
                 Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -369,7 +402,10 @@ export default function CreateTrainingPage() {
             </div>
 
             <div>
-              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="type"
+                className="block mb-1 text-sm font-medium text-gray-700"
+              >
                 Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -389,7 +425,10 @@ export default function CreateTrainingPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="description"
+              className="block mb-1 text-sm font-medium text-gray-700"
+            >
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -404,7 +443,10 @@ export default function CreateTrainingPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="content"
+              className="block mb-1 text-sm font-medium text-gray-700"
+            >
               Content <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -419,7 +461,10 @@ export default function CreateTrainingPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="requiredScore" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="requiredScore"
+              className="block mb-1 text-sm font-medium text-gray-700"
+            >
               Required Score (%) <span className="text-red-500">*</span>
             </label>
             <input
@@ -441,24 +486,29 @@ export default function CreateTrainingPage() {
               <button
                 type="button"
                 onClick={addQuestion}
-                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <Plus className="h-4 w-4 mr-1" />
+                <Plus className="w-4 h-4 mr-1" />
                 Add Question
               </button>
             </div>
 
             {formData.questions?.map((question, questionIndex) => (
-              <div key={questionIndex} className="bg-gray-50 p-4 rounded-md mb-4">
-                <div className="flex justify-between items-start mb-3">
-                  <h4 className="text-md font-medium text-gray-900">Question {questionIndex + 1}</h4>
+              <div
+                key={questionIndex}
+                className="p-4 mb-4 rounded-md bg-gray-50"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h4 className="font-medium text-gray-900 text-md">
+                    Question {questionIndex + 1}
+                  </h4>
                   {formData.questions && formData.questions.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeQuestion(questionIndex)}
                       className="text-red-600 hover:text-red-800"
                     >
-                      {<Trash2 className="h-4 w-4" />}
+                      {<Trash2 className="w-4 h-4" />}
                     </button>
                   )}
                 </div>
@@ -467,44 +517,66 @@ export default function CreateTrainingPage() {
                   <input
                     type="text"
                     value={question.question}
-                    onChange={(e) => handleQuestionChange(questionIndex, 'question', e.target.value)}
+                    onChange={(e) =>
+                      handleQuestionChange(
+                        questionIndex,
+                        "question",
+                        e.target.value
+                      )
+                    }
                     placeholder="Enter question"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
-                <div className="space-y-2 mb-3">
+                <div className="mb-3 space-y-2">
                   {question.options.map((option, optionIndex) => (
                     <div key={optionIndex} className="flex items-center">
                       <input
-                        placeholder='tick answeer'
+                        placeholder="tick answeer"
                         type="radio"
                         id={`q${questionIndex}-option${optionIndex}`}
                         name={`q${questionIndex}-correct`}
                         checked={question.answer === optionIndex}
-                        onChange={() => handleCorrectAnswerChange(questionIndex, optionIndex)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                        onChange={() =>
+                          handleCorrectAnswerChange(questionIndex, optionIndex)
+                        }
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
                       <input
                         type="text"
                         value={option}
-                        onChange={(e) => handleOptionChange(questionIndex, optionIndex, e.target.value)}
+                        onChange={(e) =>
+                          handleOptionChange(
+                            questionIndex,
+                            optionIndex,
+                            e.target.value
+                          )
+                        }
                         placeholder={`Option ${optionIndex + 1}`}
-                        className="ml-2 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="flex-1 px-3 py-2 ml-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500">Select the radio button next to the correct answer.</p>
+                <p className="text-xs text-gray-500">
+                  Select the radio button next to the correct answer.
+                </p>
               </div>
             ))}
           </div>
 
           {/* Video Upload */}
           <div className="mb-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">Videos</h3>
-              <button type="button" onClick={addVideo} className="text-blue-600 hover:underline">Add Video</button>
+              <button
+                type="button"
+                onClick={addVideo}
+                className="text-blue-600 hover:underline"
+              >
+                Add Video
+              </button>
             </div>
             {(formData.videos || []).map((video, index) => (
               <div key={index} className="mb-4">
@@ -512,7 +584,9 @@ export default function CreateTrainingPage() {
                   type="text"
                   placeholder="Video Name"
                   value={video.name}
-                  onChange={(e) => handleVideoChange(index, 'name', e.target.value)}
+                  onChange={(e) =>
+                    handleVideoChange(index, "name", e.target.value)
+                  }
                   className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md"
                 />
                 <div className="relative w-[80%] sm:w-full overflow-hidden">
@@ -521,27 +595,38 @@ export default function CreateTrainingPage() {
                     type="file"
                     accept="video/*"
                     onChange={(e) => handleVideoUpload(index, e)}
-                    className="mb-2 w-full text-xs file:text-xs file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-100 file:text-gray-700"
+                    className="w-full mb-2 text-xs file:text-xs file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-100 file:text-gray-700"
                   />
                 </div>
 
                 {videoUploadLoading && (
-                  <p className="text-blue-600 text-sm">Uploading video...</p>
+                  <p className="text-sm text-blue-600">Uploading video...</p>
                 )}
                 {video.url && !videoUploadLoading && (
-                  <p className="text-green-600 text-sm">Uploaded ✅</p>
+                  <p className="text-sm text-green-600">Uploaded ✅</p>
                 )}
 
-                <button onClick={() => removeVideo(index)} className="text-red-600 text-sm hover:underline">Remove</button>
+                <button
+                  onClick={() => removeVideo(index)}
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
 
           {/* Books Upload */}
           <div className="mb-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">Books</h3>
-              <button type="button" onClick={addBook} className="text-blue-600 hover:underline">Add Book</button>
+              <button
+                type="button"
+                onClick={addBook}
+                className="text-blue-600 hover:underline"
+              >
+                Add Book
+              </button>
             </div>
             {(formData.books || []).map((book, index) => (
               <div key={index} className="mb-4">
@@ -549,31 +634,37 @@ export default function CreateTrainingPage() {
                   type="text"
                   placeholder="Book Name"
                   value={book.name}
-                  onChange={(e) => handleBookChange(index, 'name', e.target.value)}
+                  onChange={(e) =>
+                    handleBookChange(index, "name", e.target.value)
+                  }
                   className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md"
                 />
                 <div className="relative w-[80%] sm:w-full overflow-hidden">
                   <input
-                    placeholder='book'
+                    placeholder="book"
                     type="file"
                     accept=".pdf,.doc,.docx"
-                    disabled={videoUploadLoading} 
+                    disabled={videoUploadLoading}
                     onChange={(e) => handleBookUpload(index, e)}
-                    className="mb-2 w-full text-xs file:text-xs file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-100 file:text-gray-700"
+                    className="w-full mb-2 text-xs file:text-xs file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-100 file:text-gray-700"
                   />
                 </div>
                 {bookUploadLoading && (
-                  <p className="text-blue-600 text-sm">Uploading book...</p>
+                  <p className="text-sm text-blue-600">Uploading book...</p>
                 )}
                 {book.url && !bookUploadLoading && (
-                  <p className="text-green-600 text-sm">Uploaded ✅</p>
+                  <p className="text-sm text-green-600">Uploaded ✅</p>
                 )}
 
-                <button onClick={() => removeBook(index)} className="text-red-600 text-sm hover:underline">Remove</button>
+                <button
+                  onClick={() => removeBook(index)}
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
-
 
           <div className="flex items-center mb-6">
             <input
@@ -581,10 +672,15 @@ export default function CreateTrainingPage() {
               id="isActive"
               name="isActive"
               checked={formData.isActive}
-              onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, isActive: e.target.checked }))
+              }
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">
+            <label
+              htmlFor="isActive"
+              className="block ml-2 text-sm text-gray-900"
+            >
               Active (immediately available to visitors)
             </label>
           </div>
@@ -592,16 +688,16 @@ export default function CreateTrainingPage() {
           <div className="flex justify-end space-x-3">
             <Link
               href="/admin/training"
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
             >
-              {isSubmitting ? 'Creating...' : 'Create Training'}
+              {isSubmitting ? "Creating..." : "Create Training"}
             </button>
           </div>
         </form>

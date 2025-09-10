@@ -1,31 +1,43 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/AuthContext';
-import { siteAPI, Department, MeetingLocation, SiteSettings } from '@/lib/api';
-import { Building, MapPin, Settings, Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { siteAPI, Department, MeetingLocation, SiteSettings } from "@/lib/api";
+import {
+  Building,
+  MapPin,
+  Settings,
+  Plus,
+  Trash2,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function SiteSettingsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [meetingLocations, setMeetingLocations] = useState<MeetingLocation[]>([]);
+  const [meetingLocations, setMeetingLocations] = useState<MeetingLocation[]>(
+    []
+  );
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'departments' | 'locations' | 'settings'>('departments');
+  const [activeTab, setActiveTab] = useState<
+    "departments" | "locations" | "settings"
+  >("departments");
 
   // Form states
-  const [newDepartment, setNewDepartment] = useState('');
-  const [newLocation, setNewLocation] = useState('');
+  const [newDepartment, setNewDepartment] = useState("");
+  const [newLocation, setNewLocation] = useState("");
 
   const { user, token } = useAuth();
 
   useEffect(() => {
-    if (token && (user?.role === 'admin' || user?.role === 'manager')) {
+    if (token && (user?.role === "admin" || user?.role === "manager")) {
       fetchData();
     }
-  }, [token, user,]);
+  }, [token, user]);
 
   const fetchData = async () => {
     if (!token) return;
@@ -47,15 +59,15 @@ export default function SiteSettingsPage() {
           settingsData = await siteAPI.getSiteSettings(sites[0]._id, token);
         }
       } catch (settingsError) {
-        console.warn('Could not load site settings:', settingsError);
+        console.warn("Could not load site settings:", settingsError);
       }
 
       setDepartments(deptData);
       setMeetingLocations(locationData);
       setSiteSettings(settingsData);
     } catch (err) {
-      console.error('Error fetching site data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load site data');
+      console.error("Error fetching site data:", err);
+      setError(err instanceof Error ? err.message : "Failed to load site data");
     } finally {
       setIsLoading(false);
     }
@@ -65,12 +77,15 @@ export default function SiteSettingsPage() {
     if (!token || !newDepartment.trim()) return;
 
     try {
-      const department = await siteAPI.createDepartment({ name: newDepartment.trim() }, token);
-      setDepartments(prev => [...prev, department]);
-      setNewDepartment('');
-      setSuccessMessage('Department added successfully');
+      const department = await siteAPI.createDepartment(
+        { name: newDepartment.trim() },
+        token
+      );
+      setDepartments((prev) => [...prev, department]);
+      setNewDepartment("");
+      setSuccessMessage("Department added successfully");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add department');
+      setError(err instanceof Error ? err.message : "Failed to add department");
     }
   };
 
@@ -78,46 +93,67 @@ export default function SiteSettingsPage() {
     if (!token || !newLocation.trim()) return;
 
     try {
-      const location = await siteAPI.createMeetingLocation({ name: newLocation.trim() }, token);
-      setMeetingLocations(prev => [...prev, location]);
-      setNewLocation('');
-      setSuccessMessage('Meeting location added successfully');
+      const location = await siteAPI.createMeetingLocation(
+        { name: newLocation.trim() },
+        token
+      );
+      setMeetingLocations((prev) => [...prev, location]);
+      setNewLocation("");
+      setSuccessMessage("Meeting location added successfully");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add meeting location');
+      setError(
+        err instanceof Error ? err.message : "Failed to add meeting location"
+      );
     }
   };
 
   const handleDeleteDepartment = async (id: string) => {
-    if (!token || !confirm('Are you sure you want to delete this department?')) return;
+    if (!token || !confirm("Are you sure you want to delete this department?"))
+      return;
 
     try {
       await siteAPI.deleteDepartment(id, token);
-      setDepartments(prev => prev.filter(dept => dept._id !== id));
-      setSuccessMessage('Department deleted successfully');
+      setDepartments((prev) => prev.filter((dept) => dept._id !== id));
+      setSuccessMessage("Department deleted successfully");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete department');
+      setError(
+        err instanceof Error ? err.message : "Failed to delete department"
+      );
     }
   };
 
   const handleDeleteLocation = async (id: string) => {
-    if (!token || !confirm('Are you sure you want to delete this meeting location?')) return;
+    if (
+      !token ||
+      !confirm("Are you sure you want to delete this meeting location?")
+    )
+      return;
 
     try {
       await siteAPI.deleteMeetingLocation(id, token);
-      setMeetingLocations(prev => prev.filter(loc => loc._id !== id));
-      setSuccessMessage('Meeting location deleted successfully');
+      setMeetingLocations((prev) => prev.filter((loc) => loc._id !== id));
+      setSuccessMessage("Meeting location deleted successfully");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete meeting location');
+      setError(
+        err instanceof Error ? err.message : "Failed to delete meeting location"
+      );
     }
   };
 
-  if (!user || (user.role !== 'admin' && user.role !== 'manager')) {
+  if (!user || (user.role !== "admin" && user.role !== "manager")) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You don&apos;t have permission to access this page.</p>
-          <Link href="/admin/dashboard" className="mt-4 inline-block text-blue-600 hover:underline">
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+            Access Denied
+          </h1>
+          <p className="text-gray-600">
+            You don&apos;t have permission to access this page.
+          </p>
+          <Link
+            href="/admin/dashboard"
+            className="inline-block mt-4 text-blue-600 hover:underline"
+          >
             Return to Dashboard
           </Link>
         </div>
@@ -127,7 +163,7 @@ export default function SiteSettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Site Management</h1>
           <p className="mt-2 text-gray-600">
@@ -136,7 +172,7 @@ export default function SiteSettingsPage() {
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded flex items-start">
+          <div className="flex items-start p-4 mb-6 text-red-700 border-l-4 border-red-500 rounded bg-red-50">
             <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
             <div>
               <p className="font-medium">Error</p>
@@ -146,7 +182,7 @@ export default function SiteSettingsPage() {
         )}
 
         {successMessage && (
-          <div className="mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded flex items-start">
+          <div className="flex items-start p-4 mb-6 text-green-700 border-l-4 border-green-500 rounded bg-green-50">
             <CheckCircle className="h-5 w-5 mr-2 mt-0.5" />
             <div>
               <p className="font-medium">Success</p>
@@ -159,53 +195,55 @@ export default function SiteSettingsPage() {
         <div className="mb-8">
           <nav className="flex space-x-8">
             <button
-              onClick={() => setActiveTab('departments')}
+              onClick={() => setActiveTab("departments")}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'departments'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                activeTab === "departments"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              <Building className="h-4 w-4 inline mr-2" />
+              <Building className="inline w-4 h-4 mr-2" />
               Departments
             </button>
             <button
-              onClick={() => setActiveTab('locations')}
+              onClick={() => setActiveTab("locations")}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'locations'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                activeTab === "locations"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              <MapPin className="h-4 w-4 inline mr-2" />
+              <MapPin className="inline w-4 h-4 mr-2" />
               Meeting Locations
             </button>
             <button
-              onClick={() => setActiveTab('settings')}
+              onClick={() => setActiveTab("settings")}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'settings'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                activeTab === "settings"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              <Settings className="h-4 w-4 inline mr-2" />
+              <Settings className="inline w-4 h-4 mr-2" />
               Site Settings
             </button>
           </nav>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="flex items-center justify-center p-8">
+            <div className="w-8 h-8 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
             <span className="ml-2 text-gray-600">Loading...</span>
           </div>
         ) : (
-          <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <div className="overflow-hidden bg-white rounded-lg shadow-md">
             {/* Departments Tab */}
-            {activeTab === 'departments' && (
+            {activeTab === "departments" && (
               <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Departments</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Departments
+                  </h2>
                   <div className="flex space-x-2">
                     <input
                       type="text"
@@ -217,9 +255,9 @@ export default function SiteSettingsPage() {
                     <button
                       onClick={handleAddDepartment}
                       disabled={!newDepartment.trim()}
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 disabled:bg-gray-300"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus className="w-4 h-4 mr-2" />
                       Add Department
                     </button>
                   </div>
@@ -227,28 +265,37 @@ export default function SiteSettingsPage() {
 
                 <div className="space-y-2">
                   {departments.map((dept) => (
-                    <div key={dept._id} className="flex items-center justify-between p-3 border border-gray-200 rounded-md">
-                      <span className="font-medium text-gray-900">{dept.name}</span>
+                    <div
+                      key={dept._id}
+                      className="flex items-center justify-between p-3 border border-gray-200 rounded-md"
+                    >
+                      <span className="font-medium text-gray-900">
+                        {dept.name}
+                      </span>
                       <button
                         onClick={() => handleDeleteDepartment(dept._id)}
                         className="text-red-600 hover:text-red-800"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
                   {departments.length === 0 && (
-                    <p className="text-gray-500 text-center py-8">No departments found. Add one above.</p>
+                    <p className="py-8 text-center text-gray-500">
+                      No departments found. Add one above.
+                    </p>
                   )}
                 </div>
               </div>
             )}
 
             {/* Meeting Locations Tab */}
-            {activeTab === 'locations' && (
+            {activeTab === "locations" && (
               <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Meeting Locations</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Meeting Locations
+                  </h2>
                   <div className="flex space-x-2">
                     <input
                       type="text"
@@ -260,9 +307,9 @@ export default function SiteSettingsPage() {
                     <button
                       onClick={handleAddLocation}
                       disabled={!newLocation.trim()}
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 disabled:bg-gray-300"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus className="w-4 h-4 mr-2" />
                       Add Location
                     </button>
                   </div>
@@ -270,71 +317,96 @@ export default function SiteSettingsPage() {
 
                 <div className="space-y-2">
                   {meetingLocations.map((location) => (
-                    <div key={location._id} className="flex items-center justify-between p-3 border border-gray-200 rounded-md">
-                      <span className="font-medium text-gray-900">{location.name}</span>
+                    <div
+                      key={location._id}
+                      className="flex items-center justify-between p-3 border border-gray-200 rounded-md"
+                    >
+                      <span className="font-medium text-gray-900">
+                        {location.name}
+                      </span>
                       <button
                         onClick={() => handleDeleteLocation(location._id)}
                         className="text-red-600 hover:text-red-800"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
                   {meetingLocations.length === 0 && (
-                    <p className="text-gray-500 text-center py-8">No meeting locations found. Add one above.</p>
+                    <p className="py-8 text-center text-gray-500">
+                      No meeting locations found. Add one above.
+                    </p>
                   )}
                 </div>
               </div>
             )}
 
             {/* Site Settings Tab */}
-            {activeTab === 'settings' && (
+            {activeTab === "settings" && (
               <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Site Settings</h2>
+                <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                  Site Settings
+                </h2>
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Visitor Types</h3>
+                    <h3 className="mb-4 text-lg font-medium text-gray-900">
+                      Visitor Types
+                    </h3>
                     <div className="space-y-3">
                       <label className="flex items-center">
                         <input
                           type="checkbox"
                           checked={siteSettings?.visitorEnabled !== false}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                           readOnly
                         />
-                        <span className="ml-2 text-sm text-gray-700">Enable Regular Visitors</span>
+                        <span className="ml-2 text-sm text-gray-700">
+                          Enable Regular Visitors
+                        </span>
                       </label>
                       <label className="flex items-center">
                         <input
                           type="checkbox"
                           checked={siteSettings?.contractorEnabled !== false}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                           readOnly
                         />
-                        <span className="ml-2 text-sm text-gray-700">Enable Contractors</span>
+                        <span className="ml-2 text-sm text-gray-700">
+                          Enable Contractors
+                        </span>
                       </label>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Email Configuration</h3>
+                    <h3 className="mb-4 text-lg font-medium text-gray-900">
+                      Email Configuration
+                    </h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Main Notification Email</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Main Notification Email
+                        </label>
                         <input
-                          placeholder='email '
+                          placeholder="email "
                           type="email"
-                          value={siteSettings?.mainNotificationEmail || ''}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          value={siteSettings?.mainNotificationEmail || ""}
+                          className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                           readOnly
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Additional Notification Emails</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Additional Notification Emails
+                        </label>
                         <textarea
-                          value={siteSettings?.additionalNotificationEmails?.join('\n') || ''}
+                          value={
+                            siteSettings?.additionalNotificationEmails?.join(
+                              "\n"
+                            ) || ""
+                          }
                           rows={3}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                           placeholder="One email per line"
                           readOnly
                         />
@@ -344,7 +416,9 @@ export default function SiteSettingsPage() {
 
                   <div className="pt-4">
                     <p className="text-sm text-gray-500">
-                      Site settings configuration is currently read-only. Contact your system administrator to modify these settings.
+                      Site settings configuration is currently read-only.
+                      Contact your system administrator to modify these
+                      settings.
                     </p>
                   </div>
                 </div>

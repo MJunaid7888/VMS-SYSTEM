@@ -1,21 +1,21 @@
 class AuthError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'AuthError';
+    this.name = "AuthError";
   }
 }
 
 class TokenError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'TokenError';
+    this.name = "TokenError";
   }
 }
 
 class DatabaseError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'DatabaseError';
+    this.name = "DatabaseError";
   }
 }
 
