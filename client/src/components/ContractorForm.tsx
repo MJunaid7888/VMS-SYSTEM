@@ -496,6 +496,8 @@ export default function ContractorForm({
     // Update form state
     setForm((prev) => ({
       ...prev,
+      visitStartDate: new Date().toISOString().slice(0, 16),
+      visitEndDate: new Date().toISOString().slice(0, 16),
       documents: [...(prev.documents || []), ...uploadedDocs],
     }));
   };

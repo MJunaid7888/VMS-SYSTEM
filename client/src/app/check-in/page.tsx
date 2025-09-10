@@ -63,8 +63,10 @@ const defaultContractorForm = (formType: string): FormData => ({
   department: "",
   hostEmployee: "",
   meetingLocation: "",
-  visitStartDate: new Date().toISOString().slice(0, 16),
-  visitEndDate: new Date().toISOString().slice(0, 16),
+  visitStartDate: "", // leave blank initially
+  visitEndDate: "", // leave blank initially
+  // visitStartDate: new Date().toISOString().slice(0, 16),
+  // visitEndDate: new Date().toISOString().slice(0, 16),
   purpose: "",
   agreed: "off",
   hazards: [],
