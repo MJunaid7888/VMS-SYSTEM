@@ -292,7 +292,7 @@ export default function ContractorForm({
   >([]);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [settings, setSettings] = useState<SystemSettingsType>({
-    visitorPhotoRequired: false,
+    visitorPhotoRequired: true,
     trainingRequired: false,
   });
 
